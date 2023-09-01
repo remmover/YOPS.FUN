@@ -14,3 +14,6 @@ PASSWORD_RESET_ERROR = "Password reset error"
 PASSWORD_RESET_EMAIL_SUCCESS = "email for reset password send successfully"
 PASSWORD_RESET_SUCCESS = "Password reset successfully"
 USER_NOT_FOUND = "User not found"
+
+UNAUTHORIZED_ADMIN = "Unauthorized administrator access."
+UNAUTHORIZED_MODERATOR = "Unauthorized moderator access."

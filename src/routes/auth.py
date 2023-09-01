@@ -21,6 +21,12 @@ from src.services.auth import auth_service
 from src.services.email import send_email
 from src.conf import messages
 
+from src.schemas import AdminSchema, ModerSchema
+from src.database.models import User
+
+
+
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
 
@@ -177,3 +183,13 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
         return {"message": messages.EMAIL_ALREADY_CONFIRMED}
     await repository_users.confirmed_email(email, db)
     return {"message": messages.EMAIL_CONFIRMED}
+
+
+
+@router.get("/admin-page")
+async def admin_page(current_user: User = Depends(auth_service.is_admin)):
+    return {"message": "Welcome, admin!"}
+
+@router.get("/moderator-page")
+async def moderator_page(current_user: User = Depends(auth_service.is_moderator)):
+    return {"message": "Welcome, moderator!"}

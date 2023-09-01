@@ -13,7 +13,9 @@ from src.database.connect import get_db
 from src.repository import users as repository_users
 from src.conf.config import config
 from src.conf import messages
+from src.schemas import AdminSchema
 
+from src.database.models import User
 
 class Auth:
     """Class to handle authentication-related operations."""
@@ -190,5 +192,26 @@ class Auth:
             user = pickle.loads(user)
         return user
 
+
+
+
+
+# project
+
+    async def is_admin(current_user: User = Depends(get_current_user)):
+        if current_user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=messages.UNAUTHORIZED_ADMIN,
+            )
+        return current_user
+
+    async def is_moderator(current_user: User = Depends(get_current_user)):
+        if current_user.role != "moder":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=messages.UNAUTHORIZED_MODERATOR,
+            )
+        return current_user
 
 auth_service = Auth()

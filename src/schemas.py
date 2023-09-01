@@ -30,6 +30,17 @@ class ContactSchema(BaseModel):
     bd_date: date
     additional_data: str | None = Field(max_length=300)
 
+class AdminSchema(BaseModel):
+    admin_id: str = Field(min_length=5, max_length=16)
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=10)
+
+class ModerSchema(BaseModel):
+    moder_id: str = Field(min_length=5, max_length=16)
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=10)
+
+
 
 class ContactResponseSchema(ContactSchema):
     id: int = 1
