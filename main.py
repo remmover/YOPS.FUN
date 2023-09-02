@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -34,6 +36,7 @@ async def startup():
     r = await redis.Redis(
         host=config.redis_host,
         port=config.redis_port,
+        password=config.redis_password,
         db=0,
         encoding="utf-8",
         decode_responses=True,
