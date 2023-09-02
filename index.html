@@ -1,6 +1,158 @@
+<!DOCTYPE html>
 <html>
-<title>Your Opinion and Picture Status</title>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your OPinion and Status</title>
+
+    <meta charset='utf-8'>
+    <!--script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script-->
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src='jquery.svg3dtagcloud.min.js'></script>
+
+    <link href='https://fonts.googleapis.com/css?family=Oswald&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <link href="style.css" rel="stylesheet" type="text/css">
+
+    <script>
+        var TAG_SIZE = '100';
+        $(document).ready(function() {
+            var entries = [
+                { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-10-562x800_original.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx1', b: 'zzz1' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-4-666x800_original.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx2', b: 'zzz2' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-9-1200x1200_original.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx3', b: 'zzz3' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-12-526x800_original.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx4', b: 'zzz4' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/home-3-1-500x325.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx5', b: 'zzz5' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-3-420x590.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx6', b: 'zzz6' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-4-420x590.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx7', b: 'zzz7' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-2-420x590.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx8', b: 'zzz8' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-6-420x590.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx9', b: 'zzz9' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/still-life-2-870x600.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx10', b: 'zzz10' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/still-life-3-870x600.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx11', b: 'zzz11' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/portrait-5-570x770.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx12', b: 'zzz12' }, target: '_top', tooltip: 'Lorem ipsum' },
+                { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/landscape-3-420x590.jpg', width: TAG_SIZE, height: TAG_SIZE, click: onClickItem, url: { a: 'xxx13', b: 'zzz13' }, target: '_top', tooltip: 'Lorem ipsum' }
+            ];
+
+            var settings = {
+                entries: entries,
+                width: 300,
+                height: 300,
+                radius: '65%',
+                radiusMin: 75,
+                bgDraw: true,
+                bgColor: '#00000000',
+                opacityOver: 1.00,
+                opacityOut: 0.05,
+                opacitySpeed: 6,
+                fov: 800,
+                speed: 1.5,
+                fontFamily: 'Oswald, Arial, sans-serif',
+                fontSize: '15',
+                fontColor: '#fff',
+                fontWeight: 'normal',//bold
+                fontStyle: 'normal',//italic 
+                fontStretch: 'normal',//wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
+                fontToUpperCase: true,
+                tooltipFontFamily: 'Oswald, Arial, sans-serif',
+                tooltipFontSize: '11',
+                tooltipFontColor: '#fff',
+                tooltipFontWeight: 'normal',//bold
+                tooltipFontStyle: 'normal',//italic 
+                tooltipFontStretch: 'normal',//wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
+                tooltipFontToUpperCase: false,
+                tooltipTextAnchor: 'left',
+                tooltipDiffX: 0,
+                tooltipDiffY: 10
+            };
+
+            //var svg3DTagCloud = new SVG3DTagCloud( document.getElementById( 'holder'  ), settings );
+            $('#main_3d_tagcloud').svg3DTagCloud(settings);
+
+            }
+        );
+
+        function api_get_item(item_list, status, req) {
+            ;
+        }
+
+        function onClickItem(url) {
+            alert("URL="+JSON.stringify(url));
+/*          $.ajax({
+                'url': "/send_message",
+                'type': "POST",
+                'dataType': "html",
+                'data': {
+                    'session_id': str(session_id),
+                    'username': username,
+                    'addressee': addressee,
+                    'message': message },
+                'success': api_get_item })
+*/
+        }
+    </script>
+
+
+<style>
+*{
+    margin:0;
+}
+.container{
+    max-width:1200px;
+    margin:auto;
+    background:#ddd;
+}
+header{
+    height:150px;
+    background:#333;
+}
+nav{
+    height:50px;
+    background:#000;
+}
+main{
+    background:#ccc;
+}
+aside{
+    width:25%;
+    height:800px;
+    float:left;
+    background:#333;
+}
+section{
+    width:75%;
+    height:200px;
+    float:left;
+    background:#ccc;
+}
+.clear{
+    clear:both;
+}
+footer{
+    height:80px;
+    background:#ccc;
+}
+</style>
+<head>
 <body>
-  <h1>Site in frontend is visible! HTTPS must work too as www.yops.fun.</h1>
+    <div class="container">
+        <header></header>
+        <nav></nav>
+        <main>
+            <aside>
+                <div id='main_3d_tagcloud'></div>
+            </aside>
+            <section>
+                <div id='item-container'>
+                    <img id="item-container-image"><br>
+                    <div id="item-container-comments">
+                        <span id="item-container-comments-expand">
+                        Photo, QR, Description and Comments for the selected Item.
+                        </span>
+                    <div>
+                <div>
+            </section>
+            <div class="clear"></div>
+        </div>
+        <footer></footer>
+    </div>
 </body>
 </html>
