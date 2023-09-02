@@ -41,3 +41,15 @@ class User(Base):
     role: Mapped[Enum] = mapped_column("role", Enum(Role), default=Role.user)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    comment = relationship("Comment", back_populates="user")
+
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = mapped_column(Integer, primary_key=True, index=True)
+    text = mapped_column(String, index=True)
+    created_at = mapped_column(DateTime, nullable=False)
+    update_ad = mapped_column(DateTime, nullable=False)
+    user_id = mapped_column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="comment")
