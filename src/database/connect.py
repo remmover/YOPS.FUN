@@ -37,7 +37,13 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(config.sqlalchemy_database_url)
+
+SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://" \
+    + f"{config.postgres_user}:{config.postgres_password}" \
+    + f"@{config.postgres_host}:{config.postgres_port}" \
+    + f"/{config.postgres_db}"
+
+sessionmanager = DatabaseSessionManager(SQLALCHEMY_DATABASE_URL)
 
 
 # Dependency
