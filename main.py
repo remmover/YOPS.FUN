@@ -52,7 +52,7 @@ def read_root():
     Returns:
         dict: A dictionary containing a greeting message.
     """
-    return {"message": "Your Own Pictures and Status API"}
+    return {"message": "Your Own Pictures and Status API."}
 
 
 if __name__ == "__main__":
