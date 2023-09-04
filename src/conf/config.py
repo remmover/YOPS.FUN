@@ -3,21 +3,32 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    sqlalchemy_database_url: str = (
-        "postgresql+asyncpg://postgres:password@localhost:5432/contact_book_db"
-    )
-    secret_key: str = "secret key"
+
+    secret_key: str = "HERO_SECRET_KEY"
     algorithm: str = "HS256"
-    mail_username: str = "example@meta.ua"
-    mail_password: str = "qwerty"
-    mail_from: str = "example@meta.ua"
+
+    postgres_user: str = "HERO_POSTGRES_USER"
+    postgres_password: str = "HERO_POSTGRES_PASSWORD"
+    postgres_db: str = "HERO_POSTGRES_DB_NAME"
+    postgres_host: str = "HERO_DOMAIN_OR_IP_POSTGRES_ADDRESS"
+    postgres_port: int = 5423
+
+    redis_host: str = "HERO_DOMAIN_OR_IP_REDIS_ADDRESS"
+    redis_port: int = 6379
+    redis_password: str = "HERO_REDIS_PASSWORD"
+
+    mail_username: str = "HERO@meta.ua"
+    mail_password: str = "HERO_MAILBOX_PASSWORD"
+    mail_from: str = "HERO@meta.ua"
     mail_port: int = 465
     mail_server: str = "smtp.meta.ua"
-    redis_host: str = "localhost"
-    redis_port: int = 6379
-    cloudinary_name: str = "cloudinary_name"
-    cloudinary_api_key: str = "1234"
-    cloudinary_api_secret: str = "213213"
+
+    cloudinary_name: str = "HERO_CLOUDINARY_IDENT"
+    cloudinary_api_key: str = "HERO_CLOUDINARY_KEY"
+    cloudinary_api_secret: str = "HERO_CLOUDINARY_SECRET"
+
+    gpt_api_key: str = "HERO_CHATGPT_API_KEY"
+
     model_config = ConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
