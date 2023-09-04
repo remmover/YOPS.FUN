@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     cloudinary_api_key: str = "HERO_CLOUDINARY_KEY"
     cloudinary_api_secret: str = "HERO_CLOUDINARY_SECRET"
 
+    gpt_api_key: str = "HERO_CHATGPT_API_KEY"
+
     model_config = ConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
