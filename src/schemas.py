@@ -44,19 +44,3 @@ class RequestEmail(BaseModel):
 class ResetPasswordSchema(BaseModel):
     new_password: str
     r_new_password: str
-
-
-class CommentCreateSchema(BaseModel):
-    text: str
-
-
-class CommentResponseSchema(BaseModel):
-    id: int
-    text: str
-    created_at: datetime
-    updated_at: datetime
-    user_id: int
-
-
-class CommentUpdateSchema(BaseModel):
-    text: str
