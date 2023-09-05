@@ -13,13 +13,17 @@ from fastapi.security import (
     HTTPBearer,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy import func,select
 from src.database.connect import get_db
 from src.schemas import UserSchema, UserResponseSchema, TokenModel, RequestEmail
 from src.repository import users as repository_users
 from src.services.auth import auth_service
 from src.services.email import send_email
 from src.conf import messages
+from src.database.models import user,User,Role
+from src.repository.users import create_user
+import pickle
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
@@ -177,3 +181,65 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
         return {"message": messages.EMAIL_ALREADY_CONFIRMED}
     await repository_users.confirmed_email(email, db)
     return {"message": messages.EMAIL_CONFIRMED}
+
+
+
+
+@router.post("/admin_page", response_model=TokenModel)
+async def login(
+    body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    user = await repository_users.get_user_by_email(body.username, db)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL)
+    if not auth_service.verify_password(body.password, user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.BAD_PASSWORD)
+
+    if user.role == 'admin':
+        return {"message": "Welcome Admin!"}
+    
+
+
+@router.post("/moder_page", response_model=TokenModel)
+async def login(
+    body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    user = await repository_users.get_user_by_email(body.username, db)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL)
+    if not auth_service.verify_password(body.password, user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.BAD_PASSWORD)
+
+    if user.role == 'moder':
+        return {"message": "Welcome Moder!"}
+    
+
+
+    # access_token = await auth_service.create_access_token(data={"sub": user.email})
+    # refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
+    # await repository_users.update_token(user, refresh_token, db)
+    # return {
+    #     "access_token": access_token,
+    #     "refresh_token": refresh_token,
+    #     "token_type": "bearer",
+    # }
+
+
+
+# @router.post("/admin-page",response_model=UserSchema, status_code=status.HTTP_202_ACCEPTED)
+# async def admin_page(body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+#     user = await repository_users.get_user_by_email(body.email, db)
+#     if user.role == 'admin':
+#           return {"message": "Welcome Admin!"}
+
+
+
+# @router.get("/admin-page", response_model=None)
+# async def admin_page(username: str, current_user: User = Depends(auth_service.get_current_user)):
+#     if username == "admin" and current_user:
+#         return {"message": "Welcome, admin!"}
+#     raise HTTPException(
+#         status_code=status.HTTP_403_FORBIDDEN,
+#         detail="You don't have permission to access this page",
+#     )
+

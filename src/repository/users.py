@@ -46,9 +46,21 @@ async def create_user(body: UserSchema, db: AsyncSession) -> User:
         logging.error(e)
     new_user = User(**body.model_dump(), avatar=avatar)
     db.add(new_user)
+    
+    num_users = await db.execute(select(func.count(User.id)))
+    num_users = num_users.scalar()
+
+    if num_users == 0:
+        new_user.role = "admin"
+    
     await db.commit()
     await db.refresh(new_user)
     return new_user
+
+
+
+
+
 
 
 async def update_token(user: User, token: str | None, db: AsyncSession) -> None:

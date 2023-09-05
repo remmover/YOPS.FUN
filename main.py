@@ -33,7 +33,7 @@ async def startup():
     Returns:
         None
     """
-    r = await redis.Redis(
+    r = redis.Redis(
         host=config.redis_host,
         port=config.redis_port,
         password=config.redis_password,
@@ -41,7 +41,7 @@ async def startup():
         encoding="utf-8",
         decode_responses=True,
     )
-    await FastAPILimiter.init(r)
+    FastAPILimiter.init(r)
 
 
 @app.get("/")
