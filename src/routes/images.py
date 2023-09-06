@@ -52,18 +52,21 @@ async def image_create(file: UploadFile = File(),
     :raises HTTPException:
             This exception is raised when such image already exists.
     '''
-    ufile = cloudinary.uploader.upload(file.file,
-                                       public_id=f'ImageApp/{current_user.username}',
+    cloud = cloudinary.uploader.upload(file.file,
                                        overwrite=True)
-    image_url = cloudinary.CloudinaryImage(f'ImageApp/{current_user.username}') \
-                          .build_url(version=ufile.get('version'))
-    small_image_url = cloudinary.CloudinaryImage(f'ImageApp/{current_user.username}') \
+    # print(f"[u] version={cloud.get('version')}, public_id={cloud.get('public_id')}")
+    cloud_public_id = cloud.get('public_id')
+    cloud_version = cloud.get('version')
+    image_url = cloudinary.CloudinaryImage(cloud_public_id) \
+                          .build_url(version=cloud_version)
+    small_image_url = cloudinary.CloudinaryImage(cloud_public_id) \
                                 .build_url(width=config.small_image_size,
                                            height=config.small_image_size,
                                            crop='fill',
-                                           version=ufile.get('version'))
+                                           version=cloud_version)
     try:
         image = await repository_images.image_create(image_url, small_image_url,
+                                                     cloud_public_id, cloud_version,
                                                      current_user, db)
     except IntegrityError:
         raise HTTPException(status_code=400, detail='Image already exists')

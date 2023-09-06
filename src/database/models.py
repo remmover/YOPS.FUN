@@ -25,6 +25,12 @@ class Image(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     image: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     small_image: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    '''cloud_public_id is cloudinary public ID. It is useful for deleting, etc.'''
+    cloud_public_id: Mapped[str] = mapped_column(String(32), nullable=False,
+                                                 unique=True)
+    '''cloud_version is cloudinary version. It is useful for image transformation,
+       etc.'''
+    cloud_version: Mapped[str] = mapped_column(Integer, nullable=False)
     '''about is a description about image'''
     about: Mapped[str] = mapped_column(Text, nullable=False, default="")
     created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())

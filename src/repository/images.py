@@ -12,16 +12,19 @@ from src.schemas import ImageAboutUpdateSchema
 
 
 async def image_create(image_url: str, small_image_url: str,
+                       cloud_public_id: str, cloud_version: str,
                        user: User, db: AsyncSession) -> Image:
     '''
     Creates a new image for a specific user.
 
-    :param image_url: cloudinary url for the image to create.
+    :param image_url: Cloudinary url for the image to create.
     :type image_url: str
     :param small_image_url: cloudinary url for the small image to create.
                             It is useful for image navigation on the site
                             3D Tag Cloud.
     :type small_image_url: str
+    :param asset_id: Asset ID in Cloudinary.
+    :type asset_id: str
     :param user: The user to create the image item for.
     :type user: User
     :param db: The database session.
@@ -31,6 +34,8 @@ async def image_create(image_url: str, small_image_url: str,
     '''
     image = Image(image=image_url,
                   small_image=small_image_url,
+                  cloud_public_id=cloud_public_id,
+                  cloud_version=cloud_version,
                   user_id=user.id)
     db.add(image)
     await db.commit()
