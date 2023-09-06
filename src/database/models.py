@@ -107,5 +107,3 @@ class Logout(Base):
     __tablename__ = "logouts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     access_token: Mapped[str] = mapped_column(String(255), nullable=False)
-
-user = User()
