@@ -31,8 +31,7 @@ class ResetPasswordSchema(BaseModel):
     r_new_password: str
 
 
-
-#{{{ Image
+# {{{ Image
 
 class ImageDb(BaseModel):
     id: int
@@ -63,5 +62,25 @@ class ReturnMessageResponseSchema(BaseModel):
 #     small_image_url: str
 #     model_config = ConfigDict(from_attributes=True)
 
-#}}}
+# }}}
 
+class CommentDb(BaseModel):
+    id: int
+    text: str
+    created_at: datetime
+    updated_at: datetime
+    user_id: int
+    image_id: int
+
+
+class CommentCreateSchema(BaseModel):
+    text: str = Field(max_length=300)
+
+
+class CommentResponseSchema(BaseModel):
+    id: int
+    text: str
+    created_at: datetime
+    updated_at: datetime
+    user_id: int
+    image_id: int
