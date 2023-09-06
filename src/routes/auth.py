@@ -191,7 +191,7 @@ async def login(
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL)
     if not auth_service.verify_password(body.password, user.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.BAD_PASSWORD)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.BAD_PASSWORD)
 
     if user.role == Role.admin:
         return {"message": messages.ADMIN_IN}
