@@ -51,7 +51,10 @@ class ImageAboutUpdateSchema(BaseModel):
 class ImageAboutUpdateResponseSchema(BaseModel):
     image_id: int
     message: str
-    model_config = ConfigDict(from_attributes=True)
+
+
+class ReturnMessageResponseSchema(BaseModel):
+    message: str
 
 
 # class ImageCreateResponseSchema(BaseModel):

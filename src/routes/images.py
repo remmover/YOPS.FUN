@@ -4,10 +4,10 @@ from fastapi import ( APIRouter
                     , Depends
                     , File
                     , HTTPException
-                    # , status
+                    , status
                     , UploadFile
                     ,)
-# from fastapi import Path
+from fastapi import Path
 # from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,10 +16,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conf.config import config
 from src.database.connect import get_db
-from src.database.models import User
+from src.database.models import User, Image
 from src.repository import images as repository_images
 from src.schemas import ImageDb
-from src.schemas import ImageAboutUpdateSchema, ImageAboutUpdateResponseSchema
+from src.schemas import ( ImageAboutUpdateSchema, ImageAboutUpdateResponseSchema
+                        , ReturnMessageResponseSchema
+                        ,)
 from src.services.auth import auth_service
 
 
@@ -99,3 +101,35 @@ async def image_about_update(
         return { 'image_id': image.id,
                  'message': 'Image description is successfully changed.'}
     raise HTTPException(status_code=400, detail='None suitable image is.')
+
+
+@router.delete("/{image_id}", response_model=ReturnMessageResponseSchema)
+async def image_delete(
+            image_id: int = Path(
+                description="The ID of image to delete", ge=1),
+            current_user: User = Depends(auth_service.get_current_user),
+            db: AsyncSession = Depends(get_db)):
+    '''
+    Deletes an existent image with a specific ID for the current owner.
+
+    :param image_id: The ID of image to delete.
+    :type image_id: int
+    :param current_user: Current user which must be image owner.
+    :type current_user: User
+    :param db: The database session.
+    :type db: AsyncSession
+    :return: image
+    :rtype: ReturnMessageResponseSchema
+    :raises HTTPException:
+            This exception is raised when image is absent.
+    '''
+    image: Image = await repository_images.image_delete(image_id, current_user, db)
+    if image is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image is absent.",
+        )
+    # print(f"[d] public_id={image.cloud_public_id} to delete")
+    # Destroy image in cloudinary too
+    cloudinary.uploader.destroy(image.cloud_public_id)
+    return { "message": f"Image with ID {image_id} is successfully deleted." }
