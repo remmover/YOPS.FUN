@@ -47,6 +47,13 @@ class ImageAboutUpdateSchema(BaseModel):
     image_id: int
     about: str
 
+
+class ImageAboutUpdateResponseSchema(BaseModel):
+    image_id: int
+    message: str
+    model_config = ConfigDict(from_attributes=True)
+
+
 # class ImageCreateResponseSchema(BaseModel):
 #     short_about: str
 #     small_image_url: str
