@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from datetime import date
-
+from src.database.models import user
 
 class UserSchema(BaseModel):
     username: str = Field(min_length=5, max_length=16)
@@ -44,3 +44,4 @@ class RequestEmail(BaseModel):
 class ResetPasswordSchema(BaseModel):
     new_password: str
     r_new_password: str
+

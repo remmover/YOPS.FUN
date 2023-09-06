@@ -4,18 +4,18 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
 
-    secret_key: str = "HERO_SECRET_KEY"
+    secret_key: str = "SECRET_KEY"
     algorithm: str = "HS256"
 
-    postgres_user: str = "HERO_POSTGRES_USER"
-    postgres_password: str = "HERO_POSTGRES_PASSWORD"
-    postgres_db: str = "HERO_POSTGRES_DB_NAME"
-    postgres_host: str = "HERO_DOMAIN_OR_IP_POSTGRES_ADDRESS"
-    postgres_port: int = 5423
+    postgres_user: str = "POSTGRES_USER"
+    postgres_password: str = "POSTGRES_PASSWORD"
+    postgres_db: str = "POSTGRES_DB"
+    postgres_host: str = "POSTGRES_HOST"
+    postgres_port: int = 5433
 
-    redis_host: str = "HERO_DOMAIN_OR_IP_REDIS_ADDRESS"
+    redis_host: str = "REDIS_HOST"
     redis_port: int = 6379
-    redis_password: str = "HERO_REDIS_PASSWORD"
+    redis_password: str = "REDIS_PASSWORD"
 
     mail_username: str = "HERO@meta.ua"
     mail_password: str = "HERO_MAILBOX_PASSWORD"
@@ -23,11 +23,11 @@ class Settings(BaseSettings):
     mail_port: int = 465
     mail_server: str = "smtp.meta.ua"
 
-    cloudinary_name: str = "HERO_CLOUDINARY_IDENT"
-    cloudinary_api_key: str = "HERO_CLOUDINARY_KEY"
-    cloudinary_api_secret: str = "HERO_CLOUDINARY_SECRET"
+    cloudinary_name: str = "CLOUDINARY_NAME"
+    cloudinary_api_key: str = "CLOUDINARY_API_KEY"
+    cloudinary_api_secret: str = "CLOUDINARY_API_SECRET"
 
-    gpt_api_key: str = "HERO_CHATGPT_API_KEY"
+    gpt_api_key: str = "GPT_API_KEY"
 
     model_config = ConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
