@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     secret_key: str = "SECRET_KEY"
     algorithm: str = "HS256"
+    small_image_size: int = 100
 
     postgres_user: str = "POSTGRES_USER"
     postgres_password: str = "POSTGRES_PASSWORD"

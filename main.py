@@ -6,8 +6,9 @@ from starlette.middleware.cors import CORSMiddleware
 from fastapi_limiter import FastAPILimiter
 import redis.asyncio as redis
 
-from src.routes import auth, users
 from src.conf.config import config
+from src.routes import auth, users, images
+
 
 app = FastAPI()
 app.add_middleware(
@@ -17,8 +18,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(auth.router)
 app.include_router(users.router, prefix="/api")
+app.include_router(images.router, prefix="/api")
 
 
 @app.on_event("startup")
