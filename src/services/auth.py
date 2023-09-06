@@ -22,7 +22,10 @@ class Auth:
     SECRET_KEY = config.secret_key
     ALGORITHM = config.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-    cache = redis.Redis(host=config.redis_host, port=config.redis_port, db=0)
+    cache = redis.Redis(host=config.redis_host,
+                        port=config.redis_port,
+                        password=config.redis_password,
+                        db=0)
 
     def verify_password(self, plain_password, hashed_password):
         """Class to handle authentication-related operations."""

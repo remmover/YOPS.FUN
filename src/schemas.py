@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
-from datetime import date
+from datetime import datetime
 
 
 class UserSchema(BaseModel):
@@ -22,21 +22,6 @@ class TokenModel(BaseModel):
     token_type: str = "bearer"
 
 
-class ContactSchema(BaseModel):
-    name: str = Field(min_length=2, max_length=50)
-    surname: str = Field(min_length=2, max_length=50)
-    email: str
-    number: str | None
-    bd_date: date
-    additional_data: str | None = Field(max_length=300)
-
-
-class ContactResponseSchema(ContactSchema):
-    id: int = 1
-    user: UserResponseSchema | None
-    model_config = ConfigDict(from_attributes=True)
-
-
 class RequestEmail(BaseModel):
     email: EmailStr
 
@@ -44,3 +29,27 @@ class RequestEmail(BaseModel):
 class ResetPasswordSchema(BaseModel):
     new_password: str
     r_new_password: str
+
+
+#{{{ Image
+
+class ImageDb(BaseModel):
+    id: int
+    image: str
+    small_image: str
+    about: str
+    created_at: datetime
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ImageAboutUpdateSchema(BaseModel):
+    image_id: int
+    about: str
+
+# class ImageCreateResponseSchema(BaseModel):
+#     short_about: str
+#     small_image_url: str
+#     model_config = ConfigDict(from_attributes=True)
+
+#}}}

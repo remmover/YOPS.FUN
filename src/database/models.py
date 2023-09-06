@@ -24,10 +24,16 @@ class Image(Base):
     __tablename__ = "images"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     image: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    small_image: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     '''about is a description about image'''
-    about: Mapped[str] = mapped_column(Text, nullable=True)
+    about: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
+    updated_at: Mapped[date] = mapped_column("updated_at", DateTime, default=func.now(),
+                                             onupdate=func.now())
     tags = relationship("Tag", secondary=image_m2m_tag, backref="images")
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    '''user_id always must be present because image is created by specific user'''
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"),
+                                         nullable=False)
     user: Mapped["User"] = relationship('User', backref="images", lazy='joined')
 
 
@@ -85,7 +91,9 @@ class Comment(Base):
     image_id: Mapped[int] = mapped_column(Integer, ForeignKey("images.id"),
                                           nullable=True)
     image: Mapped["Image"] = relationship('Image', backref="comments", lazy='joined')
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    '''user_id always must be present because comment is created by specific user'''
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"),
+                                         nullable=False)
     user: Mapped["User"] = relationship('User', backref="comments", lazy='joined')
 
 
@@ -99,7 +107,9 @@ class Star(Base):
     image_id: Mapped[int] = mapped_column(Integer, ForeignKey("images.id"),
                                           nullable=True)
     image: Mapped["Image"] = relationship('Image', backref="stars", lazy='joined')
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    '''user_id always must be present because star level is defined by specific user'''
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"),
+                                         nullable=False)
     user: Mapped["User"] = relationship('User', backref="stars", lazy='joined')
 
 
