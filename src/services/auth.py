@@ -13,6 +13,7 @@ from src.database.connect import get_db
 from src.repository import users as repository_users
 from src.conf.config import config
 from src.conf import messages
+from src.database.models import Role
 
 
 class Auth:

@@ -31,6 +31,7 @@ class ResetPasswordSchema(BaseModel):
     r_new_password: str
 
 
+
 #{{{ Image
 
 class ImageDb(BaseModel):
@@ -63,3 +64,4 @@ class ReturnMessageResponseSchema(BaseModel):
 #     model_config = ConfigDict(from_attributes=True)
 
 #}}}
+
