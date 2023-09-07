@@ -7,8 +7,7 @@ from fastapi_limiter import FastAPILimiter
 import redis.asyncio as redis
 
 from src.conf.config import config
-from src.routes import auth, users, images
-
+from src.routes import auth, users, images, comment
 
 app = FastAPI()
 app.add_middleware(
@@ -22,6 +21,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(users.router, prefix="/api")
 app.include_router(images.router, prefix="/api")
+app.include_router(comment.router, prefix="/api")
 
 
 @app.on_event("startup")

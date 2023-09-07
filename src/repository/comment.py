@@ -2,8 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.models import Comment
 
 
-def create_comment(db: AsyncSession, text: str, user_id: int, image_id: int):
-    new_comment = Comment(text=text, user_id=user_id, image_id=image_id)
+def create_comment(db: AsyncSession, comment: str, user_id: int, image_id: int):
+    new_comment = Comment(comment=comment, user_id=user_id, image_id=image_id)
     db.add(new_comment)
     db.commit()
     db.refresh(new_comment)

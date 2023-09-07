@@ -1,21 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy import select
 from src.database.connect import get_db
-from src.database.models import Comment, Image
+from src.database.models import Comment, Image, User
 from src.schemas import CommentCreateSchema, CommentResponseSchema, ReturnMessageResponseSchema
 from src.services.auth import auth_service
 from src.repository.comment import create_comment, get_comments_for_image, update_comment, delete_comment
 
-router = APIRouter(prefix='/comments')
+router = APIRouter(prefix='/comments', tags=["comments"])
 
 
 @router.post("/images/{image_id}/", response_model=CommentResponseSchema)
-def create_comment_for_image(
+async def create_comment_for_image(
         image_id: int, comment: CommentCreateSchema, db: AsyncSession = Depends(get_db),
         current_user: User = Depends(auth_service.get_current_user)):
-    image = db.query(Image).filter(Image.id == image_id, Image.user_id == current_user.id).first()
+    sq = select(Image).filter(Image.id == image_id, Image.user_id == current_user.id)
+    result = await db.execute(sq)
+    image = result.scalar_one_or_none()
     if not image:
         raise HTTPException(status_code=404, detail="Image not found or doesn't belong to the current user")
 
@@ -25,7 +27,7 @@ def create_comment_for_image(
 
 @router.get("/images/{image_id}/", response_model=list[CommentResponseSchema])
 def get_comments_for_image(image_id: int, db: AsyncSession = Depends(get_db)):
-    image = db.query(Image).filter(Image.id == image_id).first()
+    image = db.select(Image).filter(Image.id == image_id).first()
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
 
