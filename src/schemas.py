@@ -58,10 +58,11 @@ class ReturnMessageResponseSchema(BaseModel):
     message: str
 
 
-# class ImageCreateResponseSchema(BaseModel):
-#     short_about: str
-#     small_image_url: str
-#     model_config = ConfigDict(from_attributes=True)
+class SmallImageReadResponseSchema(BaseModel):
+    image_id: int
+    small_image_url: str
+    short_about: str
+    model_config = ConfigDict(from_attributes=True)
 
 #}}}
 
