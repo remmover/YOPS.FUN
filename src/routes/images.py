@@ -1,5 +1,6 @@
 import cloudinary
 import cloudinary.uploader
+from datetime import date
 from fastapi import ( APIRouter
                     , Depends
                     , File
@@ -8,12 +9,10 @@ from fastapi import ( APIRouter
                     , UploadFile
                     ,)
 from fastapi import Path
-# from fastapi_limiter.depends import RateLimiter
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-# from typing import List
-
-
+from typing import List
 from src.conf.config import config
 from src.database.connect import get_db
 from src.database.models import User, Image
@@ -21,6 +20,7 @@ from src.repository import images as repository_images
 from src.schemas import ImageDb
 from src.schemas import ( ImageAboutUpdateSchema, ImageAboutUpdateResponseSchema
                         , ReturnMessageResponseSchema
+                        , SmallImageReadResponseSchema
                         ,)
 from src.services.auth import auth_service
 
@@ -133,3 +133,97 @@ async def image_delete(
     # Destroy image in cloudinary too
     cloudinary.uploader.destroy(image.cloud_public_id)
     return { "message": f"Image with ID {image_id} is successfully deleted." }
+
+
+def shortent(about: str) -> str:
+    if len(about) > 48:
+        about = about[:48] + "…"
+    return about
+
+
+@router.get("/{search:path}", response_model=List[SmallImageReadResponseSchema],
+            description='No more than 10 requests per minute',
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))])
+async def images_read(
+                search: str,
+                current_user: User = Depends(auth_service.get_current_user),
+                db: AsyncSession = Depends(get_db)):
+    '''
+    Retrieves a list of images which are corresponded to search filter. Call of this
+    function is rate limited.
+
+    :param current_user: Current user.
+    :type current_user: User
+    :param db: The database session.
+    :type db: Session
+    :return: List of images
+    :rtype: List[SmallImageReadResponseSchema]
+
+    Searches images into database which is identified by AsyncSession db.
+
+    Searching can be made by the following criterias:
+    |1. Username, like "Roy Bebru".
+    |2. Creation period from specific date during specific days.
+    |3. Tag list up to 5 items.
+    |4. AND-combination of the criterias above.    
+
+    Examples:
+
+    Get images with case insensitive username 'roy rebru' which are created
+    from 2023-08-24 (-5 days) up to 2023-08-29 and each image contains tags
+    'awesome', 'sun', 'world', 'ясно' simultaneously:
+    |http://todo.yops.fun:8000/api/images/roy bebru/2023-08-29/-5/awesome/sun/world/ясно
+    search="Roy Bebru/2023-08-29/-5/awesome/sun/world/ясно"
+
+    Get all images:
+    |http://todo.yops.fun:8000/api/images
+    '''
+    username = None
+    from_date = None
+    days = None
+    tags = []
+    ind = 0
+
+    search_args = search.split('/')
+
+    if search_args[0] == '':
+        ind += 1
+    if len(search_args) > ind:
+        if len(search_args[ind]):
+            if search_args[ind].startswith('@'):
+                username = search_args[ind][1:]
+                ind += 1
+            elif ( not search_args[ind][0].isdigit() and
+                not search_args[ind][0].startswith('-') ):
+                username = search_args[ind]
+                ind += 1
+        else:
+            ind += 1 # skip empty
+
+    if len(search_args) > ind:
+        try:
+            from_date = date.fromisoformat(search_args[ind])
+            ind += 1
+        except ValueError:
+            pass
+
+    if len(search_args) > ind:
+        try:
+            days = int(search_args[ind])
+            ind += 1
+        except ValueError:
+            pass
+
+    tags = search_args[ind:]
+    if from_date is None and days is None and username:
+        # search contains only tags (like "awesome/sun/world/ясно")
+        tags.insert(0, username)
+        username = None
+
+    records = await repository_images.image_search(
+                                username, from_date, days, tags,
+                                current_user, db)
+    return [{ 'image_id': id
+            , 'small_image_url': small_image
+            , 'short_about': shortent(about) }
+            for id, small_image, about in records]

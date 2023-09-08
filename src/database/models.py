@@ -1,7 +1,7 @@
 import enum
 from datetime import date
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, SmallInteger, String, Table, Text, func
 from sqlalchemy import Enum
 # from sqlalchemy.dialects.postgresql import TEXT
@@ -11,12 +11,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database.connect import Base
 
 
-image_m2m_tag = Table(
-    "image_m2m_tag",
+tag_m2m_image = Table(
+    "tag_m2m_image",
     Base.metadata,
     Column("id", Integer, primary_key=True),
     Column("image_id", Integer, ForeignKey("images.id", ondelete="CASCADE")),
     Column("tag_id", Integer, ForeignKey("tags.id", ondelete="CASCADE")),
+    # Only 1 time can be assign the same tag to the same image
+    UniqueConstraint("image_id", "tag_id", name="tag_image")
 )
 
 
@@ -36,7 +38,7 @@ class Image(Base):
     created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column("updated_at", DateTime, default=func.now(),
                                              onupdate=func.now())
-    tags = relationship("Tag", secondary=image_m2m_tag, backref="images")
+    tags = relationship("Tag", secondary=tag_m2m_image, backref="images")
     '''user_id always must be present because image is created by specific user'''
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"),
                                          nullable=False)
@@ -47,7 +49,9 @@ class Tag(Base):
     __tablename__ = "tags"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     '''name is case insensitive without space series (man spaces are changed
-       with one)'''
+       with one). Cannot start with digit and cannot contain "/" in aim
+       to avoid conflicts with some requests
+    '''
     name: Mapped[str] = mapped_column(String(63), nullable=False, unique=True)
 
 
@@ -61,7 +65,9 @@ class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     '''username must be case insensitive unique because comments
-       must always be uniquely identified without an email address'''
+       must always be uniquely identified without an email address.
+       Cannot start with digit and cannot contain "/" in aim
+       to avoid conflicts with some requests'''
     username: Mapped[str] = mapped_column(String(50))
     '''email must be case insensitive unique to avoid spoofing'''
     email: Mapped[str] = mapped_column(String(250), nullable=False)
