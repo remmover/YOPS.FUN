@@ -63,4 +63,10 @@ class SmallImageReadResponseSchema(BaseModel):
     short_about: str
     model_config = ConfigDict(from_attributes=True)
 
+
+class ImageReadResponseSchema(BaseModel):
+    image_id: int
+    image_url: str
+    about: str
+    model_config = ConfigDict(from_attributes=True)
 #}}}

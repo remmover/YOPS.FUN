@@ -99,6 +99,14 @@ async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | N
     return image
 
 
+async def image_read(id: int,
+        user: User, db: AsyncSession) -> Image:
+    sq = select(Image).filter(Image.id == id)
+    result = await db.execute(sq)
+    image = result.scalar_one_or_none()
+    return image
+
+
 async def image_search(
         username: str, from_date: date|None, days: int|None, tags: list,
         user: User, db: AsyncSession) -> list:
@@ -165,8 +173,9 @@ async def image_search(
             FROM images im
         """)
     # print(sq, str(from_date), str(days), str(to_date))
-    # for i in range(tags_amount, 5):
-    #     tags.append('')
+
+    for i in range(tags_amount, 5):
+        tags.append('')
 
     # Execute the select query asynchronously and fetch the results
     result = await db.execute(sq, {
@@ -181,6 +190,8 @@ async def image_search(
         'tag5': tags[4],
     })
     images = result.fetchall()
-    for im in images:
-        print(im)
+
+    # for im in images:
+    #     print(im)
+
     return images

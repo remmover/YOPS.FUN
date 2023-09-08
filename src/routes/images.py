@@ -20,6 +20,7 @@ from src.repository import images as repository_images
 from src.schemas import ImageDb
 from src.schemas import ( ImageAboutUpdateSchema, ImageAboutUpdateResponseSchema
                         , ReturnMessageResponseSchema
+                        , ImageReadResponseSchema
                         , SmallImageReadResponseSchema
                         ,)
 from src.services.auth import auth_service
@@ -141,10 +142,26 @@ def shortent(about: str) -> str:
     return about
 
 
-@router.get("/{search:path}", response_model=List[SmallImageReadResponseSchema],
+@router.get("/{id}", response_model=ImageReadResponseSchema,
             description='No more than 10 requests per minute',
             dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def images_read(
+async def image_read(
+                id: int,
+                current_user: User = Depends(auth_service.get_current_user),
+                db: AsyncSession = Depends(get_db)):
+    image: Image = await repository_images.image_read(id, current_user, db)
+    if image:
+        return {"image_id": image.id, "image_url": image.image, "about": image.about}
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Image {id} is absent.",
+    )
+
+
+@router.get("/find/{search:path}", response_model=List[SmallImageReadResponseSchema],
+            description='No more than 10 requests per minute',
+            dependencies=[Depends(RateLimiter(times=10, seconds=60))])
+async def images_search(
                 search: str,
                 current_user: User = Depends(auth_service.get_current_user),
                 db: AsyncSession = Depends(get_db)):
@@ -167,16 +184,16 @@ async def images_read(
     |3. Tag list up to 5 items.
     |4. AND-combination of the criterias above.    
 
-    Examples:
+    For example:
 
     Get images with case insensitive username 'roy rebru' which are created
     from 2023-08-24 (-5 days) up to 2023-08-29 and each image contains tags
     'awesome', 'sun', 'world', 'ясно' simultaneously:
-    |http://todo.yops.fun:8000/api/images/roy bebru/2023-08-29/-5/awesome/sun/world/ясно
+    |.../api/images/find/roy bebru/2023-08-29/-5/awesome/sun/world/ясно
     search="Roy Bebru/2023-08-29/-5/awesome/sun/world/ясно"
 
     Get all images:
-    |http://todo.yops.fun:8000/api/images
+    |.../api/images/find/
     '''
     username = None
     from_date = None
@@ -215,6 +232,8 @@ async def images_read(
             pass
 
     tags = search_args[ind:]
+    if tags is None:
+        tags=[]
     if from_date is None and days is None and username:
         # search contains only tags (like "awesome/sun/world/ясно")
         tags.insert(0, username)
