@@ -9,4 +9,4 @@ ACCESS_TOKEN=$(curl --silent -X 'POST' \
 
 echo "ACCESS_TOKEN=$ACCESS_TOKEN" > ./ACCESS_TOKEN.sh
 
-echo "$ACCESS_TOKEN"
+echo "Bearer $ACCESS_TOKEN"
