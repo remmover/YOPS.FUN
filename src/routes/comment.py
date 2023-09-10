@@ -14,13 +14,15 @@ router = APIRouter(prefix='/comments', tags=["comments"])
 
 @router.post("/", response_model=CommentDb)
 async def create_comment_for_image(
-        image_id: int, comment: CommentCreateSchema, db: AsyncSession = Depends(get_db),
+        image_id: int,
+        comment: str,
+        db: AsyncSession = Depends(get_db),
         current_user: User = Depends(auth_service.get_current_user)):
     image = await db.get(Image, image_id)
     if not image or image.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Image not found or doesn't belong to the current user")
 
-    new_comment = await repository_comment.create_comment(comment.text, current_user.id, image_id, db)
+    new_comment = await repository_comment.create_comment(comment, current_user.id, image_id, db)
     return new_comment
 
 

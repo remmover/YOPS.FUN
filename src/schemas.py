@@ -15,7 +15,9 @@ class UserResponseSchema(BaseModel):
     username: str
     email: str
     avatar: str
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes : True
 
 
 class TokenModel(BaseModel):
@@ -43,7 +45,9 @@ class ImageDb(BaseModel):
     about: str
     created_at: datetime
     updated_at: datetime
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes : True
 
 
 class ImageAboutUpdateSchema(BaseModel):
@@ -64,14 +68,18 @@ class SmallImageReadResponseSchema(BaseModel):
     image_id: int
     small_image_url: str
     short_about: str
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes : True
 
 
 class ImageReadResponseSchema(BaseModel):
     image_id: int
     image_url: str
     about: str
-    model_config = ConfigDict(from_attributes=True)
+
+    class Config:
+        from_attributes = True
 
 
 # }}}

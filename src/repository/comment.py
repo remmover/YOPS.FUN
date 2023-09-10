@@ -43,7 +43,7 @@ async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession
 
 async def delete_comment(comment_id: int, user: User, db: AsyncSession):
     sq = select(Comment).filter(
-        (Comment.id == comment_id) &  (Comment.user_id == user.id)
+        (Comment.id == comment_id) & (Comment.user_id == user.id)
     )
     result = await db.execute(sq)
     comment = result.scalar_one_or_none()
@@ -52,4 +52,3 @@ async def delete_comment(comment_id: int, user: User, db: AsyncSession):
         await db.delete(comment)
         await db.commit()
     return comment
-
