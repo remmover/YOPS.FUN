@@ -21,6 +21,8 @@ fastapi-limiter = "^0.1.5"
 setuptools = "^68.1.0"
 openai = {extras = ["all"], version = "^0.28.0"}
 pillow = "^10.0.0"
+qrcode = "^7.4.2"
+apscheduler = "^3.10.4"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = "^7.2.2"
