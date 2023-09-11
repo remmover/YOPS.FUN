@@ -5,8 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.models import Comment, Image, User, Role
 from src.schemas import CommentCreateSchema, CommentUpdateSchema, CommentDeleteSchema
 from src.repository.admin import (
-    check_permission_for_delete_comment,
-    check_permission_for_update_comment,
+    check_permission,
 )
 
 
@@ -36,7 +35,7 @@ async def get_comments_for_image(image_id: int, db: AsyncSession):
     return comments
 
 
-@check_permission_for_update_comment
+@check_permission
 async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession):
     sq = select(Comment).filter((Comment.id == body.comment_id))
 
@@ -50,11 +49,9 @@ async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession
     return comment
 
 
-@check_permission_for_delete_comment
+@check_permission
 async def delete_comment(comment_id: int, user: User, db: AsyncSession):
-    sq = select(Comment).filter(
-        and_(Comment.id == comment_id)
-    )
+    sq = select(Comment).filter(and_(Comment.id == comment_id))
     result = await db.execute(sq)
     comment = result.scalar_one_or_none()
 
