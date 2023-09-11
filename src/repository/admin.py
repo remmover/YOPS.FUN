@@ -66,18 +66,6 @@ def check_permission_for_delete_comment(func):
     async def wrapper(comment_id: int, user: User, db: AsyncSession):
         if user.role == Role.admin:
             return await func(comment_id, user, db)
-
-        sq = select(Comment).filter(
-            (Comment.id == comment_id) & (Comment.user_id == user.id)
-        )
-        result = await db.execute(sq)
-        comment = result.scalar_one_or_none()
-
-        if comment:
-            await db.delete(comment)
-            await db.commit()
-        return comment
-
     return wrapper
 
 

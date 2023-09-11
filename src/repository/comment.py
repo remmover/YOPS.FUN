@@ -53,7 +53,7 @@ async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession
 @check_permission_for_delete_comment
 async def delete_comment(comment_id: int, user: User, db: AsyncSession):
     sq = select(Comment).filter(
-        and_(Comment.id == comment_id, (Comment.user_id == user.id))
+        and_(Comment.id == comment_id)
     )
     result = await db.execute(sq)
     comment = result.scalar_one_or_none()
