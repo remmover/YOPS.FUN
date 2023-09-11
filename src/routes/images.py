@@ -283,7 +283,6 @@ async def image_crop(
     db: AsyncSession = Depends(get_db),
 ):
     image = await repository_images.image_exists(image_id, current_user, db)
-    # print(f"[u] version={cloud.get('version')}, public_id={cloud.get('public_id')}")
     cloud_public_id = image.cloud_public_id
     cloud_version = image.cloud_version
     crop_image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
@@ -297,7 +296,7 @@ async def image_crop(
             image_id, crop_image_url, current_user, db
         )
     except IntegrityError:
-        raise HTTPException(status_code=400, detail="Image dosnt exists")
+        raise HTTPException(status_code=400, detail="Image doesnt exists")
     return image
 
 
@@ -308,22 +307,6 @@ async def image_crop(
 #     current_user: User = Depends(auth_service.get_current_user),
 #     db: AsyncSession = Depends(get_db),
 # ):
-#     """
-#     Apply a filter to an image.
-#
-#     :param image_id: The ID of the image to apply the filter to.
-#     :type image_id: int
-#     :param filter_type: The type of filter to apply (e.g., "blur", "grayscale").
-#     :type filter_type: str
-#     :param current_user: Current user.
-#     :type current_user: User
-#     :param db: The database session.
-#     :type db: AsyncSession
-#     :return: New image record after applying the filter.
-#     :rtype: ImageDb
-#     :raises HTTPException:
-#         This exception is raised when the image does not exist or the user is not the owner.
-#     """
 #     image = await repository_images.image_read(image_id, current_user, db)
 #     if image:
 #         # Fetch the image from Cloudinary
