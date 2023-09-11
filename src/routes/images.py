@@ -1,4 +1,3 @@
-
 import cloudinary
 import cloudinary.uploader
 
@@ -272,6 +271,32 @@ async def images_search(
         {"image_id": id, "small_image_url": small_image, "short_about": shortent(about)}
         for id, small_image, about in records
     ]
+
+
+@router.post("/crop/{image_id}")
+async def image_crop(
+    width: int,
+    height: int,
+    image_id: int,
+    current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    image = await repository_images.image_exists(image_id, current_user, db)
+    cloud_public_id = image.cloud_public_id
+    cloud_version = image.cloud_version
+    crop_image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
+        width=width,
+        height=height,
+        crop="fill",
+        version=cloud_version,
+    )
+    try:
+        image = await repository_images.update_image_url(
+            image_id, crop_image_url, current_user, db
+        )
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Image doesnt exists")
+    return image
 
 
 @router.post("/qr/{image_id}")
