@@ -133,7 +133,7 @@ async def image_search(
     tags: list,
     db: AsyncSession,
 ) -> list:
-    '''
+    """
     Searches images into database which is identified by AsyncSession db.
 
     Searching can be made by the following criterias:
@@ -228,7 +228,6 @@ async def image_search(
     #     print(im)
 
     return images
-    '''
 
 
 async def image_exists(image_id: int, user: User, db: AsyncSession) -> Image:

@@ -251,55 +251,52 @@ async def images_search(
     |.../api/images/find/
     '''
 
-    # username = None
-    # from_date = None
-    # days = None
-    # tags = []
-    # ind = 0
-    #
-    # search_args = search.split("/")
-    #
-    # if search_args[0] == "":
-    #     ind += 1
-    # if len(search_args) > ind:
-    #     if len(search_args[ind]):
-    #         if search_args[ind].startswith("@"):
-    #             username = search_args[ind][1:]
-    #             ind += 1
-    #         elif not search_args[ind][0].isdigit() and not search_args[ind][
-    #             0
-    #         ].startswith("-"):
-    #             username = search_args[ind]
-    #             ind += 1
-    #     else:
-    #         ind += 1  # skip empty
-    #
-    # if len(search_args) > ind:
-    #     try:
-    #         from_date = date.fromisoformat(search_args[ind])
-    #         ind += 1
-    #     except ValueError:
-    #         pass
-    #
-    # if len(search_args) > ind:
-    #     try:
-    #         days = int(search_args[ind])
-    #         ind += 1
-    #     except ValueError:
-    #         pass
-    #
-    # tags = search_args[ind:]
-    # if tags is None:
-    #     tags = []
-    # if from_date is None and days is None and username:
-    #     # search contains only tags (like "awesome/sun/world/ясно")
-    #     tags.insert(0, username)
-    #     username = None
-    #
-    # records = await repository_images.image_search(
-    #                             username, from_date, days, tags,
-    #                             db)
-    # return [{ 'image_id': id
-    #         , 'small_image_url': small_image
-    #         , 'short_about': shortent(about) },
-    #         for id, small_image, about in records]
+    username = None
+    from_date = None
+    days = None
+    tags = []
+    ind = 0
+
+    search_args = search.split("/")
+
+    if search_args[0] == "":
+        ind += 1
+    if len(search_args) > ind:
+        if len(search_args[ind]):
+            if search_args[ind].startswith("@"):
+                username = search_args[ind][1:]
+                ind += 1
+            elif not search_args[ind][0].isdigit() and not search_args[ind][
+                0
+            ].startswith("-"):
+                username = search_args[ind]
+                ind += 1
+        else:
+            ind += 1  # skip empty
+
+    if len(search_args) > ind:
+        try:
+            from_date = date.fromisoformat(search_args[ind])
+            ind += 1
+        except ValueError:
+            pass
+
+    if len(search_args) > ind:
+        try:
+            days = int(search_args[ind])
+            ind += 1
+        except ValueError:
+            pass
+
+    tags = search_args[ind:]
+    if tags is None:
+        tags = []
+    if from_date is None and days is None and username:
+        # search contains only tags (like "awesome/sun/world/ясно")
+        tags.insert(0, username)
+        username = None
+
+    records = await repository_images.image_search(
+                                username, from_date, days, tags,
+                                db)
+    return [{'image_id': id, 'small_image_url': small_image, 'short_about': shortent(about)} for id, small_image, about in records]
