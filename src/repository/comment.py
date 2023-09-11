@@ -1,12 +1,13 @@
 from datetime import datetime
+
 from sqlalchemy import select, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import Comment, Image, User, Role
-from src.schemas import CommentCreateSchema, CommentUpdateSchema, CommentDeleteSchema
+from src.database.models import Comment, Image, User
 from src.repository.admin import (
     check_permission,
 )
+from src.schemas import CommentUpdateSchema
 
 
 async def create_comment(

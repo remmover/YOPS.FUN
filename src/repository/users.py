@@ -1,11 +1,10 @@
 import logging
 
-from fastapi import HTTPException, status
 from libgravatar import Gravatar
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.conf import messages
+
 from src.database.models import User
 from src.schemas import UserSchema
 

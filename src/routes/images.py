@@ -20,7 +20,7 @@ from src.conf.config import config
 from src.database.connect import get_db
 from src.database.models import User, Image
 from src.repository import images as repository_images
-from src.schemas import ImageDb, CropImageDb
+from src.schemas import ImageDb
 
 from src.schemas import (
     ImageAboutUpdateSchema,

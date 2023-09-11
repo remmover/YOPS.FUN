@@ -1,28 +1,16 @@
 from datetime import datetime, date, timedelta
 from sqlalchemy import (
     select,
-    text
-    # , func
-    # , distinct
-    ,
+    text,
     and_,
 )
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# from typing import List
 
+from src.database.models import Image, User
 
-from src.database.models import (
-    Image
-    # , tag_m2m_image
-    # , Tag
-    ,
-    User,
-    Role,
-)
-
-from src.schemas import ImageAboutUpdateSchema, CropImageDb
+from src.schemas import ImageAboutUpdateSchema
 from src.repository.admin import (
     check_permission,
 )

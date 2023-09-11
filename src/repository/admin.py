@@ -1,6 +1,6 @@
 from functools import wraps
 from typing import Callable
-from src.database.models import User, Image, Role, Comment
+from src.database.models import Role
 
 
 def check_permission(func: Callable):

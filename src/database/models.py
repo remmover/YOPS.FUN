@@ -5,7 +5,6 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, SmallInteger, String, Table, Text, func
 from sqlalchemy import Enum
 
-# from sqlalchemy.dialects.postgresql import TEXT
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 

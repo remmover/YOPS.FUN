@@ -1,16 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connect import get_db
 from src.database.models import Comment, Image, User
 from src.schemas import (
-    CommentCreateSchema,
     ReturnMessageResponseSchema,
     CommentDb,
     CommentShowAllSchema,
     CommentUpdateSchema,
-    CommentDeleteSchema,
 )
 from src.services.auth import auth_service
 from src.repository import comment as repository_comment
