@@ -1,7 +1,9 @@
 import cloudinary
 import cloudinary.uploader
+from PIL import Image as PILImage, ImageFilter
+from io import BytesIO
 
-from datetime import date
+from datetime import date, datetime
 from fastapi import (
     APIRouter,
     Depends,
@@ -19,7 +21,7 @@ from src.conf.config import config
 from src.database.connect import get_db
 from src.database.models import User, Image
 from src.repository import images as repository_images
-from src.schemas import ImageDb
+from src.schemas import ImageDb, CropImageDb
 
 from src.schemas import (
     ImageAboutUpdateSchema,
@@ -64,7 +66,8 @@ async def image_create(
             This exception is raised when such image already exists.
     """
     cloud = cloudinary.uploader.upload(file.file, overwrite=True)
-    # print(f"[u] version={cloud.get('version')}, public_id={cloud.get('public_id')}")
+    print(cloud)
+    print(f"[u] version={cloud.get('version')}, public_id={cloud.get('public_id')}")
     cloud_public_id = cloud.get("public_id")
     cloud_version = cloud.get("version")
     image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
@@ -269,3 +272,84 @@ async def images_search(
         {"image_id": id, "small_image_url": small_image, "short_about": shortent(about)}
         for id, small_image, about in records
     ]
+
+
+@router.post("/crop/{image_id}")
+async def image_crop(
+    width: int,
+    height: int,
+    image_id: int,
+    current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    image = await repository_images.image_exists(image_id, current_user, db)
+    cloud_public_id = image.cloud_public_id
+    cloud_version = image.cloud_version
+    crop_image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
+        width=width,
+        height=height,
+        crop="fill",
+        version=cloud_version,
+    )
+    try:
+        image = await repository_images.update_image_url(
+            image_id, crop_image_url, current_user, db
+        )
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Image doesnt exists")
+    return image
+
+
+# @router.post("/filter/{image_id}", response_model=ImageDb)
+# async def apply_filter(
+#     image_id: int,
+#     filter_type: str,
+#     current_user: User = Depends(auth_service.get_current_user),
+#     db: AsyncSession = Depends(get_db),
+# ):
+#     image = await repository_images.image_read(image_id, current_user, db)
+#     if image:
+#         # Fetch the image from Cloudinary
+#         cloud_image = cloudinary.CloudinaryImage(image.cloud_public_id)
+#
+#         # Apply the selected filter using Pillow (PIL)
+#         image_data = cloud_image.download()
+#         pil_image = PILImage.open(BytesIO(image_data))
+#
+#         if filter_type == "blur":
+#             pil_image = pil_image.filter(ImageFilter.BLUR)
+#         elif filter_type == "grayscale":
+#             pil_image = pil_image.convert("L")  # Convert to grayscale
+#
+#         # Save the filtered image to a temporary file
+#         temp_image_path = "/tmp/filtered_image.png"  # Change this path as needed
+#         pil_image.save(temp_image_path, format="PNG")
+#
+#         # Upload the filtered image back to Cloudinary
+#         cloud_filtered = cloudinary.uploader.upload(temp_image_path, overwrite=True)
+#
+#         cloud_public_id = cloud_filtered.get("public_id")
+#         cloud_version = cloud_filtered.get("version")
+#         image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
+#             version=cloud_version
+#         )
+#         small_image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
+#             width=config.small_image_size,
+#             height=config.small_image_size,
+#             crop="fill",
+#             version=cloud_version,
+#         )
+#
+#         # Update the image record in the database with the new URLs
+#         image.image = image_url
+#         image.small_image = small_image_url
+#         image.cloud_public_id = cloud_public_id
+#         image.cloud_version = cloud_version
+#         await db.commit()
+#
+#         return image
+#     else:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="Image does not exist or you do not have permission to apply a filter.",
+#         )

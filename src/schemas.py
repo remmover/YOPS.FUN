@@ -46,6 +46,12 @@ class ImageDb(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class CropImageDb(BaseModel):
+    image_id: int
+    width: int
+    height: int
+
+
 class ImageAboutUpdateSchema(BaseModel):
     image_id: int
     about: str
@@ -90,9 +96,7 @@ class CommentDb(BaseModel):
     updated_at: datetime
     image_id: int
     user_id: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CommentCreateSchema(BaseModel):
