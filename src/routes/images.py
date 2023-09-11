@@ -147,9 +147,8 @@ def shortent(about: str) -> str:
             dependencies=[Depends(RateLimiter(times=10, seconds=60))])
 async def image_read(
                 id: int,
-                current_user: User = Depends(auth_service.get_current_user),
                 db: AsyncSession = Depends(get_db)):
-    image: Image = await repository_images.image_read(id, current_user, db)
+    image: Image = await repository_images.image_read(id, db)
     if image:
         return {"image_id": image.id, "image_url": image.image, "about": image.about}
     raise HTTPException(
@@ -163,14 +162,11 @@ async def image_read(
             dependencies=[Depends(RateLimiter(times=10, seconds=60))])
 async def images_search(
                 search: str,
-                current_user: User = Depends(auth_service.get_current_user),
                 db: AsyncSession = Depends(get_db)):
     '''
     Retrieves a list of images which are corresponded to search filter. Call of this
     function is rate limited.
 
-    :param current_user: Current user.
-    :type current_user: User
     :param db: The database session.
     :type db: Session
     :return: List of images
@@ -241,7 +237,7 @@ async def images_search(
 
     records = await repository_images.image_search(
                                 username, from_date, days, tags,
-                                current_user, db)
+                                db)
     return [{ 'image_id': id
             , 'small_image_url': small_image
             , 'short_about': shortent(about) }
