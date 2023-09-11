@@ -18,9 +18,10 @@ from src.database.models import (
     # , tag_m2m_image
     # , Tag
     ,
-    User,
+    User,Role
 )
 from src.schemas import ImageAboutUpdateSchema
+from src.repository.admin import check_permission_delete_image,check_permission_for_image_about_update
 
 
 async def image_create(
@@ -61,7 +62,7 @@ async def image_create(
     await db.refresh(image)
     return image
 
-
+@check_permission_for_image_about_update
 async def image_about_update(
     body: ImageAboutUpdateSchema, user: User, db: AsyncSession
 ) -> Image:
@@ -77,7 +78,7 @@ async def image_about_update(
     :return: The updated image.
     :rtype: Image
     """
-    sq = select(Image).filter(and_(Image.id == body.image_id, Image.user_id == user.id))
+    sq = select(Image).filter(and_(Image.id == body.image_id))
     result = await db.execute(sq)
     image = result.scalar_one_or_none()
 
@@ -88,6 +89,7 @@ async def image_about_update(
     return image
 
 
+@check_permission_delete_image
 async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | None:
     """
     Delete a single image with the specified ID for a specific user.
@@ -101,7 +103,8 @@ async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | N
     :return: The deleted contact, or None if it does not exist.
     :rtype: Image | None
     """
-    sq = select(Image).filter(and_(Image.id == image_id, Image.user_id == user.id))
+
+    sq = select(Image).filter(Image.id == image_id) 
     result = await db.execute(sq)
     image = result.scalar_one_or_none()
 
