@@ -24,8 +24,7 @@ from src.database.models import (
 
 from src.schemas import ImageAboutUpdateSchema, CropImageDb
 from src.repository.admin import (
-    check_permission_delete_image,
-    check_permission_for_image_about_update,
+    check_permission,
 )
 
 
@@ -68,7 +67,7 @@ async def image_create(
     return image
 
 
-@check_permission_for_image_about_update
+@check_permission
 async def image_about_update(
     body: ImageAboutUpdateSchema, user: User, db: AsyncSession
 ) -> Image:
@@ -95,7 +94,7 @@ async def image_about_update(
     return image
 
 
-@check_permission_delete_image
+@check_permission
 async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | None:
     """
     Delete a single image with the specified ID for a specific user.
