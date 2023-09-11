@@ -1,130 +1,428 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your OPinion and Status</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+  <script src='js/jquery.svg3dtagcloud.min.js'></script>
+  <link rel="stylesheet" href="css/fontello.css">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Your Opinion, Picture, Status for FUN</title>
 
-    <meta charset='utf-8'>
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
-    <script src='jquery.svg3dtagcloud.min.js'></script>
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script>
+    const URL_PREF = "http://127.0.0.1:8000"
+    var ACCESS_TOKEN = "";
+    var TC_ITEM_SIZE = '100';
+    var TC_ITEMS = [
+      { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-10-562x800_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx1', b: 'zzz1' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-4-666x800_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx2', b: 'zzz2' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-9-1200x1200_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx3', b: 'zzz3' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-12-526x800_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx4', b: 'zzz4' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/home-3-1-500x325.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx5', b: 'zzz5' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-3-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx6', b: 'zzz6' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-4-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx7', b: 'zzz7' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-2-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx8', b: 'zzz8' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-6-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx9', b: 'zzz9' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/still-life-2-870x600.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx10', b: 'zzz10' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/still-life-3-870x600.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx11', b: 'zzz11' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/portrait-5-570x770.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx12', b: 'zzz12' }, target: '_top', tooltip: 'Lorem ipsum' },
+      { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/landscape-3-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx13', b: 'zzz13' }, target: '_top', tooltip: 'Lorem ipsum' }
+    ];
+    var TC_SETTINGS = {
+      entries: TC_ITEMS,
+      width: 360,
+      height: 360,
+      radius: '75%',
+      radiusMin: 75,
+      bgDraw: true,
+      bgColor: '#00000000',
+      opacityOver: 1.00,
+      opacityOut: 0.05,
+      opacitySpeed: 6,
+      fov: 800,
+      speed: 1.5,
+      fontFamily: 'Oswald, Arial, sans-serif',
+      fontSize: '15',
+      fontColor: '#fff',
+      fontWeight: 'normal',//bold
+      fontStyle: 'normal',//italic 
+      fontStretch: 'normal', //wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
+      fontToUpperCase: true,
+      tooltipFontFamily: 'Oswald, Arial, sans-serif',
+      tooltipFontSize: '11',
+      tooltipFontColor: '#fff',
+      tooltipFontWeight: 'normal', //bold
+      tooltipFontStyle: 'normal', //italic
+      tooltipFontStretch: 'normal', //wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
+      tooltipFontToUpperCase: false,
+      tooltipTextAnchor: 'left',
+      tooltipDiffX: 0,
+      tooltipDiffY: 10
+    };
+    var QR_OBJ;
 
-    <link href='https://fonts.googleapis.com/css?family=Oswald&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link href="style.css" rel="stylesheet" type="text/css">
+    $(document).ready(function () {
+      // var svg3DTagCloud = new SVG3DTagCloud(document.getElementById('main_tagcloud'), TC_SETTINGS);
+      $('#yops-tagcloud').svg3DTagCloud(TC_SETTINGS);
 
-    <script>
-        var TC_ITEM_SIZE = '100';
-        var TC_ITEMS = [
-            { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-10-562x800_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx1', b: 'zzz1' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-4-666x800_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx2', b: 'zzz2' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-9-1200x1200_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx3', b: 'zzz3' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10986/images/grid-gallery-12-526x800_original.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx4', b: 'zzz4' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/home-3-1-500x325.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx5', b: 'zzz5' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-3-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx6', b: 'zzz6' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-4-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx7', b: 'zzz7' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-2-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx8', b: 'zzz8' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/urban-paintings-6-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx9', b: 'zzz9' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/still-life-2-870x600.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx10', b: 'zzz10' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/still-life-3-870x600.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx11', b: 'zzz11' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/portrait-5-570x770.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx12', b: 'zzz12' }, target: '_top', tooltip: 'Lorem ipsum' },
-            { image: 'https://livedemo00.template-help.com/wt_prod-10454/images/landscape-3-420x590.jpg', width: TC_ITEM_SIZE, height: TC_ITEM_SIZE, click: onClickItem, url: { a: 'xxx13', b: 'zzz13' }, target: '_top', tooltip: 'Lorem ipsum' }
-        ];
-        var TC_SETTINGS = {
-            entries: TC_ITEMS,
-            width: 300,
-            height: 300,
-            radius: '65%',
-            radiusMin: 75,
-            bgDraw: true,
-            bgColor: '#00000000',
-            opacityOver: 1.00,
-            opacityOut: 0.05,
-            opacitySpeed: 6,
-            fov: 800,
-            speed: 1.5,
-            fontFamily: 'Oswald, Arial, sans-serif',
-            fontSize: '15',
-            fontColor: '#fff',
-            fontWeight: 'normal',//bold
-            fontStyle: 'normal',//italic 
-            fontStretch: 'normal', //wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
-            fontToUpperCase: true,
-            tooltipFontFamily: 'Oswald, Arial, sans-serif',
-            tooltipFontSize: '11',
-            tooltipFontColor: '#fff',
-            tooltipFontWeight: 'normal', //bold
-            tooltipFontStyle: 'normal', //italic
-            tooltipFontStretch: 'normal', //wider, narrower, ultra-condensed, extra-condensed, condensed, semi-condensed, semi-expanded, expanded, extra-expanded, ultra-expanded
-            tooltipFontToUpperCase: false,
-            tooltipTextAnchor: 'left',
-            tooltipDiffX: 0,
-            tooltipDiffY: 10
-        };
-        var QR_OBJ;
+      // QR_OBJ = new QRCode(document.getElementById("qrcode"), {
+      //   text: "https://yops.fun",
+      //   width: 128,
+      //   height: 128,
+      //   colorDark: "#555555",
+      //   colorLight: "#dddddd",
+      //   correctLevel: QRCode.CorrectLevel.M // QRCode.CorrectLevel.H
+      // });
+    });
 
-        $(document).ready(function() {
-            // var svg3DTagCloud = new SVG3DTagCloud(document.getElementById('main_tagcloud'), TC_SETTINGS);
-            $('#aside_tagcloud').svg3DTagCloud(TC_SETTINGS);
+    function api_get_item(item_list, status, req) {
+      ;
+    }
 
-            QR_OBJ = new QRCode(document.getElementById("qrcode"), {
-                text: "https://yops.fun",
-                width: 128,
-                height: 128,
-                colorDark : "#555555",
-                colorLight : "#dddddd",
-                correctLevel : QRCode.CorrectLevel.M // QRCode.CorrectLevel.H
-            });
-        });
-
-        function api_get_item(item_list, status, req) {
-            ;
+    function onClickItem(url) {
+      QR_OBJ.clear();
+      QR_OBJ.makeCode(JSON.stringify(url));
+      alert("Test message: Here must be loaded item identified by " + JSON.stringify(url));
+      /*          $.ajax({
+                    url: "/send_message",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        'session_id': str(session_id),
+                        'username': username,
+                        'addressee': addressee,
+                        'message': message },
+                    success: api_get_item })
+      */
+    }
+    function syntaxHighlight(json) {
+      if (typeof json != 'string') {
+        json = JSON.stringify(json, undefined, 2);
+      }
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'yops-json-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'yops-json-key';
+          } else {
+            cls = 'yops-json-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'yops-json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'yops-json-null';
         }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+    function json_parse(text) {
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        return {"Syntax error": ''+err+' -- in source: ' + text}
+      }
+    }
+    function ClearLogWindow() {
+      $("#log-window-content").html('')
+    }
+    function AppendTextToLogWindow(htmsg) {
+      $('#log-window-content').append('<p>'+ htmsg + '</p>')
+    }
+    function AppendJsonToLogWindow(htmsg, obj) {
+      $('#log-window-content').append(
+        '<p>' + htmsg + '</p>' +
+        '<pre class="yops-json-pre">' + syntaxHighlight(obj) + '</pre>')
+    }
+    function onNotSignedUp() {
+      $("#collapse-login-section").collapse({toggle: false}).collapse('hide');
+      $("#collapse-signup-section").collapse({toggle: true}).collapse('show');;
+    }
+    function onSignup() {
+      let signup_password1 = $("#signup-password1").val();
+      let signup_password2 = $("#signup-password2").val();
+      if (signup_password1 == "") {
+        alert("Password cannot be empty.");
+        return;
+      }
+      if (signup_password1 != signup_password2) {
+        alert("Password1 is different from Password2.");
+        return;
+      }
+      let url = URL_PREF + "/auth/signup";
+      let signup_nickname = $("#signup-nickname").val();
+      let signup_email = $("#signup-email").val();
 
-        function onClickItem(url) {
-            QR_OBJ.clear();
-            QR_OBJ.makeCode(JSON.stringify(url));
-            alert("Test message: Here must be loaded item identified by "+JSON.stringify(url));
-/*          $.ajax({
-                'url': "/send_message",
-                'type': "POST",
-                'dataType': "html",
-                'data': {
-                    'session_id': str(session_id),
-                    'username': username,
-                    'addressee': addressee,
-                    'message': message },
-                'success': api_get_item })
-*/
+      ClearLogWindow();
+      let data = {
+        username: signup_nickname, 
+        email: signup_email,
+        password: signup_password1
+      };
+      AppendJsonToLogWindow('POST ' + url, data);
+      $('#log-window').modal('show');
+      var retinfo = $.ajax({
+        url: url,
+        type: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(data),
+        success: function (data, status, request) {
+          let info = data;
+          if (data instanceof String) {
+            info = json_parse(data);
+          }
+          AppendJsonToLogWindow('Status: ' + status +
+            '<pre>' + retinfo.getAllResponseHeaders() + '</pre>', info);
+          $("#collapse-signup-section").collapse({toggle: false}).collapse('hide');
+          $("#collapse-login-section").collapse({toggle: true}).collapse('show');
+        },
+        error: function (request, status, error) {
+          AppendJsonToLogWindow('Status: ' + status + ': ' + error +
+              '<pre>' + retinfo.getAllResponseHeaders() + '</pre>',
+            json_parse(request.responseText));
         }
-    </script>
-<head>
+      })
+    }
+    function onLogin() {
+      let url = URL_PREF + "/auth/login";
+      let login_email = $("#login-email").val()
+      let login_password = $("#login-password").val()
+      ClearLogWindow();
+      AppendTextToLogWindow('POST ' + url);
+      $('#log-window').modal('show');
+      var retinfo = $.ajax({
+        url: url,
+        type: "POST",
+        dataType: "html",
+        data: {
+          username: login_email,
+          password: login_password
+        },
+        success: function (data, status, request) {
+          let info = json_parse(data)
+          AppendTextToLogWindow('<pre>' + retinfo.getAllResponseHeaders() + '</pre>');
+          AppendJsonToLogWindow('Status: ' + status, info);
+          if (info.hasOwnProperty("access_token")) {
+            ACCESS_TOKEN = info['access_token'];
+            $("#collapse-login-section").collapse({toggle: false}).collapse('hide');
+            $('#header-nickname').html(login_email);
+          }
+        },
+        error: function (request, status, error) {
+          AppendJsonToLogWindow('Status: ' + status + ': ' + error +
+              '<pre>' + retinfo.getAllResponseHeaders() + '</pre>',
+            json_parse(request.responseText));
+        }
+      })
+    }
+    function onSearch() {
+      let url = URL_PREF + "/api/images/find/";
+      // let url = URL_PREF + "/api/images/57";
+      ClearLogWindow();
+      AppendTextToLogWindow('GET ' + url);
+      $('#log-window').modal('show');
+      var retinfo = $.ajax({
+        beforeSend: function(request) {
+          if (ACCESS_TOKEN)
+            request.setRequestHeader("Authorization", "Bearer " + ACCESS_TOKEN);
+          },
+        url: url,
+        type: "GET",
+        dataType: "html",
+        data: {},
+        success: function (data, status, req) {
+          AppendTextToLogWindow('<pre>' + retinfo.getAllResponseHeaders() + '</pre>');
+          AppendJsonToLogWindow('Status: ' + status, json_parse(data));
+        },
+        error: function (request, status, error) {
+          AppendJsonToLogWindow('Status: ' + status + ': ' + error +
+              '<pre>' + retinfo.getAllResponseHeaders() + '</pre>',
+            json_parse(request.responseText));
+          if (error == "Unauthorized") {
+            $("#collapse-search-section").collapse({toggle: false}).collapse('hide');
+            $("#collapse-login-section").collapse({toggle: true}).collapse('show');;
+          }
+        }
+      })
+    }
+  </script>
+</head>
 
 <body>
-    <div class='container'>
-        <header></header>
-        <nav></nav>
-        <main>
-            <aside>
-                <div id='qrcode'></div>
-                <div id='aside_tagcloud'></div>
-            </aside>
-            <section>
-                <div id='item-container'>
+  <header>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+
+          <div class="text-center text-white">
+            <h1 class="yops-text-shadow">Your Opinions, Pictures, Status for 
+              <span id="header-nickname">Fun</span></h1>
+          </div>
+
+          <p class="d-inline-flex">
+          <div class="text-center">
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-search-section" aria-expanded="false" aria-controls="collapseExample">
+              Let's Go
+            </button>
+            <button class="btn btn-link text-white" role="link" data-bs-toggle="collapse" data-bs-target="#collapse-login-section">
+              <i class="icon-user-circle bg-primary"></i>
+            </button>
+          </div>
+          </p>
+
+          <!-- Auth signup section -->
+          <div class="collapse" id="collapse-signup-section">
+            <div class="container yops-transparent-container">
+              <div class="row">
+                <div class="col-12">
+                  <div class="text-center text-white">
+                    <h2>Feel free to join us!</h2>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xl-3 col-md-6 col-sm-12">
+                  <label for="signup-nickname" class="form-label">Nickname</label>
+                  <input type="text" class="form-control" id="signup-nickname" placeholder="Your nick">
+                </div>
+
+                <div class="col-xl-3 col-md-6 col-sm-12">
+                  <label for="signup-email" class="form-label">E-mail</label>
+                  <input type="text" class="form-control" id="signup-email" placeholder="yops@domain.com">
+                </div>
+
+                <div class="col-xl-2 col-md-3 col-sm-6">
+                  <label for="signup-password1" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="signup-password1" placeholder="Password">
+                </div>
+
+                <div class="col-xl-2 col-md-3 col-sm-6">
+                  <label for="signup-password2" class="form-label">Password again</label>
+                  <input type="password" class="form-control" id="signup-password2" placeholder="Password">
+                </div>
+
+                <div class="col-xl-2 col-md-6 col-sm-12 yops-items-bottom">
+                  <div class="mt-3">
+                    <button type="button" class="btn btn-primary" onclick="onSignup()">Signup</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+          <!-- Auth login section -->
+          <div class="collapse" id="collapse-login-section">
+            <div class="container yops-transparent-container">
+              <div class="row">
+                <div class="col-12">
+                  <div class="text-center text-white">
+                    <h2>Ups… Who are you?</h2>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xl-4 col-md-6 col-sm-12">
+                  <label for="login-email" class="form-label">E-mail</label>
+                  <input type="text" class="form-control" id="login-email" placeholder="Yops@CaseInsensitive.fun">
+                </div>
+
+                <div class="col-xl-4 col-md-6 col-sm-12">
+                  <label for="login-password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="login-password" placeholder="Keep silence!">
+                </div>
+
+                <div class="col-xl-4 col-md-6 col-sm-12 yops-items-bottom">
+                  <div class="mt-3">
+                    <button class="btn btn-link text-white" role="link" onclick="onNotSignedUp()">Not registered yet?</button>
+                    <button type="button" class="btn btn-primary" onclick="onLogin()">Login</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Search collapse section -->
+          <div class="collapse" id="collapse-search-section">
+            <div class="container yops-transparent-container">
+              <div class="row">
+
+                <div class="col-xl-6 col-sm-12">
+                  <label for="search-tags" class="form-label">Tags</label>
+                  <select class="form-select" size="5" multiple id="search-tags" aria-label="Multiple select example">
+                    <option value="world" selected>world</option>
+                    <option value="life">life</option>
+                    <option value="awesome">awesome</option>
+                    <option value="story">story</option>
+                    <option value="so-so">so-so</option>
+                    <option value="strange">strange</option>
+                    <option value="excellent">excellent</option>
+                    <option value="fun">fun</option>
+                    <option value="it's a pity">it's a pity</option>
+                    <option value="ups">ups</option>
+                  </select>
+                </div>
+
+                <div class="col-xl-6 col-sm-12">
+                  <div class="mb-2">
+                    <label for="search-user" class="form-label">User</label>
+                    <input type="text" class="form-control" id="search-user" placeholder="Case Insensitive Username">
+                  </div>
+                  <div class="yops-search-period">
                     <div>
-                        <img id='item-container-image'>
+                      <label for="search-date" class="form-label">Date</label>
+                      <input type="text" class="form-control" id="search-date" placeholder="2023-09-13">
                     </div>
-                    <div id='item-container-comments'>
-                        <span id='item-container-comments-expand'>
-                        &nbsp; NEW SERVER. Photo, QR, Description and Comments for the selected Item.
-                        </span>
-                    <div>
-                <div>
-            </section>
-            <div class='clear'></div>
+                    <div class="yops-ml-20">
+                      <label for="search-days" class="form-label">Days</label>
+                      <input type="text" class="form-control" size="7" id="search-days" placeholder="7">
+                    </div>
+                    <div class="yops-ml-20">
+                      <div class="text-center">
+                        <button type="button" class="btn btn-primary" onclick="onSearch()">
+                          <i class="icon-search-1 yops-circle"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div class="card card-body yops-tagcloud-container">
+                <div id="yops-tagcloud"></div>
+              </div>
+            </div>
+
+          </div>
         </div>
-        <footer></footer>
+      </div>
+  </header>
+
+  <!-- Log Window to show requests and answers -->
+  <div class="modal" tabindex="-1" id="log-window">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Request Log</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="log-window-content"></div>
+      </div>
     </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -1,0 +1,86 @@
+:root {
+  --color1: #B4E4F4;
+  --color2: #020672;
+  --color3: #025572;
+  --color4: #819A99;  
+}
+section {
+  padding: 100px;
+}
+header {
+  padding: 50px auto 100px;
+}
+body {
+  background: url('../img/clouds-transparent.png'), linear-gradient(to right, var(--color1) 0%, var(--color2) 100%);
+  background-size: cover;
+}
+.yops-border {
+  border: 3px solid black;
+}
+.yops-items-bottom {
+  display: flex;
+  justify-content: right;
+  align-items: end;
+  border: 3 solid black;
+}
+.yops-text-shadow {
+  text-shadow: 2px 2px #aa0000;
+}
+.yops-tagcloud-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0;
+  background: rgba(0,0,0,0);
+}
+.yops-transparent-container {
+  margin-bottom: 20px;
+  padding: 20px;
+  color: var(--bs-white);
+  border-radius: 20px;
+  background: rgba(0,0,0,0.5);
+}
+.yops-search-period {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.yops-ml-20 {
+  margin-left: 20px;
+}
+  .yops-circle {
+  margin: 0 auto;
+  width: 65px;
+  height: 65px;
+  border: 3px solid var(--color3);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#yops-tagcloud {
+  width: 360px;
+  height: 360px;
+}
+
+/* Pretty JSON Indention */
+.yops-json-pre {
+  outline: 1px solid #ccc;
+  padding: 5px;
+  margin: 5px;
+}
+.yops-json-string {
+  color: green;
+}
+.yops-json-number {
+  color: darkorange;
+}
+.yops-json-boolean {
+  color: blue;
+}
+.yops-json-null {
+  color: magenta;
+}
+.yops-json-key {
+  color: red;
+}
