@@ -120,7 +120,7 @@ async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | N
     return image
 
 
-async def image_read(id: int, user: User, db: AsyncSession) -> Image:
+async def image_read(id: int, db: AsyncSession) -> Image:
     sq = select(Image).filter(Image.id == id)
     result = await db.execute(sq)
     image = result.scalar_one_or_none()
@@ -132,10 +132,9 @@ async def image_search(
     from_date: date | None,
     days: int | None,
     tags: list,
-    user: User,
     db: AsyncSession,
 ) -> list:
-    """
+    '''
     Searches images into database which is identified by AsyncSession db.
 
     Searching can be made by the following criterias:
@@ -230,6 +229,7 @@ async def image_search(
     #     print(im)
 
     return images
+    '''
 
 
 async def image_exists(image_id: int, user: User, db: AsyncSession) -> Image:

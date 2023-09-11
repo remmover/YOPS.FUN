@@ -162,115 +162,16 @@ def shortent(about: str) -> str:
     dependencies=[Depends(RateLimiter(times=10, seconds=60))],
 )
 async def image_read(
-    id: int,
-    current_user: User = Depends(auth_service.get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    image: Image = await repository_images.image_read(id, current_user, db)
+        id: int,
+        db: AsyncSession = Depends(get_db)):
+    image: Image = await repository_images.image_read(id, db)
+
     if image:
         return {"image_id": image.id, "image_url": image.image, "about": image.about}
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Image {id} is absent.",
     )
-
-
-@router.get(
-    "/find/{search:path}",
-    response_model=List[SmallImageReadResponseSchema],
-    description="No more than 10 requests per minute",
-    dependencies=[Depends(RateLimiter(times=10, seconds=60))],
-)
-async def images_search(
-    search: str,
-    current_user: User = Depends(auth_service.get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """
-
-    Retrieves a list of images which are corresponded to search filter. Call of this
-    function is rate limited.
-
-    :param current_user: Current user.
-    :type current_user: User
-    :param db: The database session.
-    :type db: Session
-    :return: List of images
-    :rtype: List[SmallImageReadResponseSchema]
-
-    Searches images into database which is identified by AsyncSession db.
-
-    Searching can be made by the following criterias:
-    |1. Username, like "Roy Bebru".
-    |2. Creation period from specific date during specific days.
-    |3. Tag list up to 5 items.
-    |4. AND-combination of the criterias above.
-
-    For example:
-
-    Get images with case insensitive username 'roy rebru' which are created
-    from 2023-08-24 (-5 days) up to 2023-08-29 and each image contains tags
-    'awesome', 'sun', 'world', 'ясно' simultaneously:
-    |.../api/images/find/roy bebru/2023-08-29/-5/awesome/sun/world/ясно
-    search="Roy Bebru/2023-08-29/-5/awesome/sun/world/ясно"
-
-    Get all images:
-
-    |.../api/images/find/
-    """
-
-    username = None
-    from_date = None
-    days = None
-    tags = []
-    ind = 0
-
-    search_args = search.split("/")
-
-    if search_args[0] == "":
-        ind += 1
-    if len(search_args) > ind:
-        if len(search_args[ind]):
-            if search_args[ind].startswith("@"):
-                username = search_args[ind][1:]
-                ind += 1
-            elif not search_args[ind][0].isdigit() and not search_args[ind][
-                0
-            ].startswith("-"):
-                username = search_args[ind]
-                ind += 1
-        else:
-            ind += 1  # skip empty
-
-    if len(search_args) > ind:
-        try:
-            from_date = date.fromisoformat(search_args[ind])
-            ind += 1
-        except ValueError:
-            pass
-
-    if len(search_args) > ind:
-        try:
-            days = int(search_args[ind])
-            ind += 1
-        except ValueError:
-            pass
-
-    tags = search_args[ind:]
-    if tags is None:
-        tags = []
-    if from_date is None and days is None and username:
-        # search contains only tags (like "awesome/sun/world/ясно")
-        tags.insert(0, username)
-        username = None
-
-    records = await repository_images.image_search(
-        username, from_date, days, tags, current_user, db
-    )
-    return [
-        {"image_id": id, "small_image_url": small_image, "short_about": shortent(about)}
-        for id, small_image, about in records
-    ]
 
 
 @router.post("/crop/{image_id}")
@@ -310,57 +211,95 @@ async def get_qr_code(
         return {"qr_code_url": qr_code_url}
     raise HTTPException(status_code=400, detail="Failed to generate QR code and upload")
 
+@router.get(
+    "/find/{search:path}",
+    response_model=List[SmallImageReadResponseSchema],
+    description="No more than 10 requests per minute",
+    dependencies=[Depends(RateLimiter(times=10, seconds=60))],
+)
+async def images_search(
+                search: str,
+                db: AsyncSession = Depends(get_db)):
+    '''
 
-# @router.post("/filter/{image_id}", response_model=ImageDb)
-# async def apply_filter(
-#     image_id: int,
-#     filter_type: str,
-#     current_user: User = Depends(auth_service.get_current_user),
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     image = await repository_images.image_read(image_id, current_user, db)
-#     if image:
-#         # Fetch the image from Cloudinary
-#         cloud_image = cloudinary.CloudinaryImage(image.cloud_public_id)
-#
-#         # Apply the selected filter using Pillow (PIL)
-#         image_data = cloud_image.download()
-#         pil_image = PILImage.open(BytesIO(image_data))
-#
-#         if filter_type == "blur":
-#             pil_image = pil_image.filter(ImageFilter.BLUR)
-#         elif filter_type == "grayscale":
-#             pil_image = pil_image.convert("L")  # Convert to grayscale
-#
-#         # Save the filtered image to a temporary file
-#         temp_image_path = "/tmp/filtered_image.png"  # Change this path as needed
-#         pil_image.save(temp_image_path, format="PNG")
-#
-#         # Upload the filtered image back to Cloudinary
-#         cloud_filtered = cloudinary.uploader.upload(temp_image_path, overwrite=True)
-#
-#         cloud_public_id = cloud_filtered.get("public_id")
-#         cloud_version = cloud_filtered.get("version")
-#         image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
-#             version=cloud_version
-#         )
-#         small_image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
-#             width=config.small_image_size,
-#             height=config.small_image_size,
-#             crop="fill",
-#             version=cloud_version,
-#         )
-#
-#         # Update the image record in the database with the new URLs
-#         image.image = image_url
-#         image.small_image = small_image_url
-#         image.cloud_public_id = cloud_public_id
-#         image.cloud_version = cloud_version
-#         await db.commit()
-#
-#         return image
-#     else:
-#         raise HTTPException(
-#             status_code=404,
-#             detail="Image does not exist or you do not have permission to apply a filter.",
-#         )
+    Retrieves a list of images which are corresponded to search filter. Call of this
+    function is rate limited.
+
+    :param db: The database session.
+    :type db: Session
+    :return: List of images
+    :rtype: List[SmallImageReadResponseSchema]
+
+    Searches images into database which is identified by AsyncSession db.
+
+    Searching can be made by the following criterias:
+    |1. Username, like "Roy Bebru".
+    |2. Creation period from specific date during specific days.
+    |3. Tag list up to 5 items.
+    |4. AND-combination of the criterias above.
+
+    For example:
+
+    Get images with case insensitive username 'roy rebru' which are created
+    from 2023-08-24 (-5 days) up to 2023-08-29 and each image contains tags
+    'awesome', 'sun', 'world', 'ясно' simultaneously:
+    |.../api/images/find/roy bebru/2023-08-29/-5/awesome/sun/world/ясно
+    search="Roy Bebru/2023-08-29/-5/awesome/sun/world/ясно"
+
+    Get all images:
+
+    |.../api/images/find/
+    '''
+
+    # username = None
+    # from_date = None
+    # days = None
+    # tags = []
+    # ind = 0
+    #
+    # search_args = search.split("/")
+    #
+    # if search_args[0] == "":
+    #     ind += 1
+    # if len(search_args) > ind:
+    #     if len(search_args[ind]):
+    #         if search_args[ind].startswith("@"):
+    #             username = search_args[ind][1:]
+    #             ind += 1
+    #         elif not search_args[ind][0].isdigit() and not search_args[ind][
+    #             0
+    #         ].startswith("-"):
+    #             username = search_args[ind]
+    #             ind += 1
+    #     else:
+    #         ind += 1  # skip empty
+    #
+    # if len(search_args) > ind:
+    #     try:
+    #         from_date = date.fromisoformat(search_args[ind])
+    #         ind += 1
+    #     except ValueError:
+    #         pass
+    #
+    # if len(search_args) > ind:
+    #     try:
+    #         days = int(search_args[ind])
+    #         ind += 1
+    #     except ValueError:
+    #         pass
+    #
+    # tags = search_args[ind:]
+    # if tags is None:
+    #     tags = []
+    # if from_date is None and days is None and username:
+    #     # search contains only tags (like "awesome/sun/world/ясно")
+    #     tags.insert(0, username)
+    #     username = None
+    #
+    # records = await repository_images.image_search(
+    #                             username, from_date, days, tags,
+    #                             db)
+    # return [{ 'image_id': id
+    #         , 'small_image_url': small_image
+    #         , 'short_about': shortent(about) },
+    #         for id, small_image, about in records]

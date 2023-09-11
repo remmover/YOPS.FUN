@@ -48,6 +48,7 @@ async def signup(
     Returns:
         UserResponseSchema: The registered user's details.
     """
+    print(f"[d] request={request}")
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(

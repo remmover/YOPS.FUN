@@ -19,3 +19,4 @@
     'folder': '',
     'original_filename': 'stream',
     'api_key': '427136772193941'
+}
