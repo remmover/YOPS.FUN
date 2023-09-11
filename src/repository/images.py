@@ -18,10 +18,15 @@ from src.database.models import (
     # , tag_m2m_image
     # , Tag
     ,
-    User,Role
+    User,
+    Role,
 )
-from src.schemas import ImageAboutUpdateSchema
-from src.repository.admin import check_permission_delete_image,check_permission_for_image_about_update
+
+from src.schemas import ImageAboutUpdateSchema, CropImageDb
+from src.repository.admin import (
+    check_permission_delete_image,
+    check_permission_for_image_about_update,
+)
 
 
 async def image_create(
@@ -61,6 +66,7 @@ async def image_create(
     await db.commit()
     await db.refresh(image)
     return image
+
 
 @check_permission_for_image_about_update
 async def image_about_update(
@@ -104,7 +110,7 @@ async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | N
     :rtype: Image | None
     """
 
-    sq = select(Image).filter(Image.id == image_id) 
+    sq = select(Image).filter(Image.id == image_id)
     result = await db.execute(sq)
     image = result.scalar_one_or_none()
 
@@ -224,3 +230,34 @@ async def image_search(
     #     print(im)
 
     return images
+
+
+async def image_exists(image_id: int, user: User, db: AsyncSession) -> Image:
+    sq = select(Image).filter(
+        and_(
+            Image.id == image_id,
+            Image.user_id == user.id,
+        )
+    )
+    result = await db.execute(sq)
+    image = result.scalar_one_or_none()
+    return image
+
+
+async def update_image_url(
+    image_id: int, crop_image_url, user: User, db: AsyncSession
+) -> Image:
+    sq = select(Image).filter(
+        and_(
+            Image.id == image_id,
+            Image.user_id == user.id,
+        )
+    )
+    result = await db.execute(sq)
+    image = result.scalar_one_or_none()
+
+    if image:
+        image.image = crop_image_url
+        image.updated_at = datetime.now()
+        await db.commit()
+    return image

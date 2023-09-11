@@ -4,9 +4,8 @@ from datetime import datetime, date, timedelta
 
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.schemas import ImageAboutUpdateSchema,CommentUpdateSchema
-from src.database.models import User, Image, Role,Comment
-
+from src.schemas import ImageAboutUpdateSchema, CommentUpdateSchema
+from src.database.models import User, Image, Role, Comment
 
 
 # IMAGETS [START]
@@ -33,16 +32,17 @@ def check_permission_delete_image(func: Callable) -> Callable:
     return wrapper
 
 
-
-
-
 def check_permission_for_image_about_update(func: Callable) -> Callable:
     @wraps(func)
-    async def wrapper(body: ImageAboutUpdateSchema, user: User, db: AsyncSession) -> Image:
+    async def wrapper(
+        body: ImageAboutUpdateSchema, user: User, db: AsyncSession
+    ) -> Image:
         if user.role == Role.admin:
             return await func(body, user, db)
 
-        sq = select(Image).filter(and_(Image.id == body.image_id, Image.user_id == user.id))
+        sq = select(Image).filter(
+            and_(Image.id == body.image_id, Image.user_id == user.id)
+        )
         result = await db.execute(sq)
         image = result.scalar_one_or_none()
 
@@ -59,6 +59,7 @@ def check_permission_for_image_about_update(func: Callable) -> Callable:
 
 
 # # COMMENTS [START]
+
 
 def check_permission_for_delete_comment(func):
     @wraps(func)
@@ -78,8 +79,6 @@ def check_permission_for_delete_comment(func):
         return comment
 
     return wrapper
-
-
 
 
 def check_permission_for_update_comment(func: Callable):

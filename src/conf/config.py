@@ -3,7 +3,6 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-
     secret_key: str = "SECRET_KEY"
     algorithm: str = "HS256"
     small_image_size: int = 100
