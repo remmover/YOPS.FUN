@@ -1,7 +1,6 @@
 import cloudinary
 import cloudinary.uploader
-from PIL import Image as PILImage, ImageFilter
-from io import BytesIO
+
 
 from datetime import date, datetime
 from fastapi import (
@@ -32,7 +31,7 @@ from src.schemas import (
 )
 
 from src.services.auth import auth_service
-
+from src.services.qr import create_qr_code_and_upload
 
 router = APIRouter(prefix="/images", tags=["images"])
 
@@ -298,6 +297,18 @@ async def image_crop(
     except IntegrityError:
         raise HTTPException(status_code=400, detail="Image doesnt exists")
     return image
+
+
+@router.post("/qr/{image_id}")
+async def get_qr_code(
+    image_id: int,
+    current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    qr_code_url = await create_qr_code_and_upload(image_id, current_user, db)
+    if qr_code_url:
+        return {"qr_code_url": qr_code_url}
+    raise HTTPException(status_code=400, detail="Failed to generate QR code and upload")
 
 
 # @router.post("/filter/{image_id}", response_model=ImageDb)
