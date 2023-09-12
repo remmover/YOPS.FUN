@@ -9,6 +9,11 @@
     integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
   <script src='js/jquery.svg3dtagcloud.min.js'></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pattaya&family=Raleway:wght@800&family=Roboto:wght@500&display=swap" rel="stylesheet"> 
+
   <link rel="stylesheet" href="css/fontello.css">
   <link rel="stylesheet" href="css/style.css">
   <title>Your Opinion, Picture, Status for FUN</title>
@@ -122,6 +127,8 @@
       });
     }
     function json_parse(text) {
+      if (!text)
+        return {}
       try {
         return JSON.parse(text);
       } catch (err) {
@@ -260,21 +267,24 @@
       <div class="row">
         <div class="col-12">
 
-          <div class="text-center text-white">
-            <h1 class="yops-text-shadow">Your Opinions, Pictures, Status for 
-              <span id="header-nickname">Fun</span></h1>
+          <div class="text-center mt-3 mb-3 yops-transparent-container">
+            <h2 class="yops-text-shadow">
+              <span class="">Your Opinions, Pictures, Status for 
+                <span id="header-nickname">Fun</span>
+              </span>
+            </h2>
           </div>
 
-          <p class="d-inline-flex">
-          <div class="text-center">
-            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-search-section" aria-expanded="false" aria-controls="collapseExample">
-              Let's Go
-            </button>
-            <button class="btn btn-link text-white" role="link" data-bs-toggle="collapse" data-bs-target="#collapse-login-section">
-              <i class="icon-user-circle bg-primary"></i>
-            </button>
+          <div class="mb-3">
+            <div class="text-center">
+              <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-search-section" aria-expanded="false" aria-controls="collapseExample">
+                Let's Go
+              </button>
+              <button class="btn btn-link text-white" role="link" data-bs-toggle="collapse" data-bs-target="#collapse-login-section">
+                <i class="icon-user-circle bg-primary"></i>
+              </button>
+            </div>
           </div>
-          </p>
 
           <!-- Auth signup section -->
           <div class="collapse" id="collapse-signup-section">
@@ -308,7 +318,7 @@
                   <input type="password" class="form-control" id="signup-password2" placeholder="Password">
                 </div>
 
-                <div class="col-xl-2 col-md-6 col-sm-12 yops-items-bottom">
+                <div class="col-xl-2 col-md-6 col-sm-12 yops-items-right-bottom">
                   <div class="mt-3">
                     <button type="button" class="btn btn-primary" onclick="onSignup()">Signup</button>
                   </div>
@@ -340,7 +350,7 @@
                   <input type="password" class="form-control" id="login-password" placeholder="Keep silence!">
                 </div>
 
-                <div class="col-xl-4 col-md-6 col-sm-12 yops-items-bottom">
+                <div class="col-xl-4 col-md-6 col-sm-12 yops-items-right-bottom">
                   <div class="mt-3">
                     <button class="btn btn-link text-white" role="link" onclick="onNotSignedUp()">Not registered yet?</button>
                     <button type="button" class="btn btn-primary" onclick="onLogin()">Login</button>
