@@ -1,6 +1,7 @@
+import re
 from typing import List
 
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, field_validator
 from datetime import datetime
 
 
@@ -121,3 +122,20 @@ class CommentUpdateSchema(BaseModel):
 class CommentDeleteSchema(BaseModel):
     comment_id: int
     image_id: int
+
+class TagResponseSchema(BaseModel):
+    name: str
+
+class TagSchema(BaseModel):
+    name: str
+
+    @field_validator("name")
+    @classmethod
+    def adjust_name(cls, name: str):
+        # delete first/last/duplicate spaces
+        name = ' '.join(name.split())
+        pattern = r"(^\d|^.*[/&!@`^%$#+])"
+        if re.search(pattern, name):
+            raise ValueError(f"Tag '{name}' cannot start with digit " \
+                             "and cannot cantain any special symbols.")
+        return name

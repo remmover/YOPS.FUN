@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from src.database.models import Image, User
-
 from src.schemas import ImageAboutUpdateSchema
 from src.repository.admin import (
     check_permission,

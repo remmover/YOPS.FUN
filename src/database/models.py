@@ -1,10 +1,10 @@
 import enum
 from datetime import date
 
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, SmallInteger, String, Table, Text, func
 from sqlalchemy import Enum
-
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 

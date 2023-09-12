@@ -2,7 +2,7 @@ import cloudinary
 import cloudinary.uploader
 
 
-from datetime import date, datetime
+from datetime import date
 from fastapi import (
     APIRouter,
     Depends,
@@ -299,4 +299,8 @@ async def images_search(
     records = await repository_images.image_search(
                                 username, from_date, days, tags,
                                 db)
-    return [{'image_id': id, 'small_image_url': small_image, 'short_about': shortent(about)} for id, small_image, about in records]
+    return [
+        {
+        'image_id': id, 'small_image_url': small_image, 'short_about': shortent(about)
+        }
+        for id, small_image, about in records]
