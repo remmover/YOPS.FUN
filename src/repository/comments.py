@@ -73,8 +73,8 @@ async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession
 async def delete_comment(comment_id: int, user: User, db: AsyncSession):
     sq = select(Comment).filter(and_(Comment.id == comment_id,
                                      or_(user.role == Role.admin,
-                                         user.role == Role.moder,
-                                         Comment.user_id == user.id)))
+                                         user.role == Role.moder)))
+    # print(f"[X] sq='{sq}', user.role='{user.role}', user.name='{user.username}'")
     result = await db.execute(sq)
     comment = result.scalar_one_or_none()
 

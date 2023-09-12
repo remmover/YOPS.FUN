@@ -110,7 +110,8 @@ async def refresh_token(
     Refresh the access token using a refresh token.
 
     Args:
-        credentials (HTTPAuthorizationCredentials): The refresh token from the authorization header.
+        credentials (HTTPAuthorizationCredentials): The refresh token from
+        the authorization header.
         db (AsyncSession): The async database session.
 
     Returns:

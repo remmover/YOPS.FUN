@@ -142,8 +142,8 @@ async def get_comments_for_image(image_id: int, db: AsyncSession = Depends(get_d
 @router.delete("/{comment_id}", response_model=ReturnMessageResponseSchema)
 async def delete_comment_for_image(
     comment_id: int = Path(description="The ID of comment to delete", ge=1),
-    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     deleted_comment = await repository_comments.delete_comment(
         comment_id, current_user, db
