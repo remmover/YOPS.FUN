@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ACCESS_TOKEN=$(curl --silent -X 'POST' \
-  'http://todo.yops.fun:8000/auth/login' \
+  'http://localhost:8000/auth/login' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d 'grant_type=&username=roybebru%40gmail.com&password=123456' \
