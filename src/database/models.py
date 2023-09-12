@@ -106,7 +106,7 @@ class Comment(Base):
         "updated_at", DateTime, default=func.now(), onupdate=func.now()
     )
     image_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("images.id"), nullable=True
+        Integer, ForeignKey("images.id"), nullable=False
     )
     image: Mapped["Image"] = relationship("Image", backref="comments", lazy="joined")
     """user_id always must be present because comment is created by specific user"""

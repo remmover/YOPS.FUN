@@ -26,7 +26,7 @@ def check_permission(func: Callable):
                     break
             else:
                 return None
-        print(f"[PE] user is {user.role}/{id(user)}")
+        # print(f"[PE] user is {user.role}/{id(user)}")
         if user.role == Role.admin or user.role == Role.moder:
             return await func(*args, **kwargs)
 

@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import select, and_, or_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import Comment, Image, User
-from src.repository.admin import (
-    check_permission,
-)
+from src.database.models import Comment, Image, User, Role
+# from src.repository.admin import (
+#     check_permission,
+# )
 from src.schemas import CommentUpdateSchema
 
 
@@ -54,9 +54,11 @@ async def get_comments_for_image(image_id: int, db: AsyncSession):
     return comments
 
 
-@check_permission
 async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession):
-    sq = select(Comment).filter((Comment.id == body.comment_id))
+    sq = select(Comment).filter(and_(Comment.id == body.comment_id,
+                                     or_(user.role == Role.admin,
+                                         user.role == Role.moder,
+                                         Comment.user_id == user.id)))
 
     result = await db.execute(sq)
     comment = result.scalar_one_or_none()
@@ -68,9 +70,11 @@ async def update_comment(body: CommentUpdateSchema, user: User, db: AsyncSession
     return comment
 
 
-@check_permission
 async def delete_comment(comment_id: int, user: User, db: AsyncSession):
-    sq = select(Comment).filter(and_(Comment.id == comment_id))
+    sq = select(Comment).filter(and_(Comment.id == comment_id,
+                                     or_(user.role == Role.admin,
+                                         user.role == Role.moder,
+                                         Comment.user_id == user.id)))
     result = await db.execute(sq)
     comment = result.scalar_one_or_none()
 

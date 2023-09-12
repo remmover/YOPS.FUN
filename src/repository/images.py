@@ -1,18 +1,18 @@
 from datetime import datetime, date, timedelta
 from sqlalchemy import (
     select,
+    delete,
     text,
     and_,
+    or_,
 )
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from src.database.models import Image, User
+from src.database.models import Image, Comment, User, Role
 from src.schemas import ImageAboutUpdateSchema
-from src.repository.admin import (
-    check_permission,
-)
+# from src.repository.admin import ( check_permission,)
 
 
 async def image_create(
@@ -54,7 +54,6 @@ async def image_create(
     return image
 
 
-@check_permission
 async def image_about_update(
     body: ImageAboutUpdateSchema, user: User, db: AsyncSession
 ) -> Image:
@@ -70,7 +69,10 @@ async def image_about_update(
     :return: The updated image.
     :rtype: Image
     """
-    sq = select(Image).filter(and_(Image.id == body.image_id))
+    sq = select(Image).filter(and_(Image.id == body.image_id,
+                                   or_(user.role == Role.admin,
+                                       user.role == Role.moder,
+                                       Image.user_id == user.id)))
     result = await db.execute(sq)
     image = result.scalar_one_or_none()
 
@@ -81,7 +83,6 @@ async def image_about_update(
     return image
 
 
-@check_permission
 async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | None:
     """
     Delete a single image with the specified ID for a specific user.
@@ -96,11 +97,18 @@ async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | N
     :rtype: Image | None
     """
 
-    sq = select(Image).filter(Image.id == image_id)
+    sq = select(Image).filter(and_(Image.id == image_id,
+                                   or_(user.role == Role.admin,
+                                       user.role == Role.moder,
+                                       Image.user_id == user.id)))
     result = await db.execute(sq)
     image = result.scalar_one_or_none()
 
     if image:
+        # Delete comment for suitable image
+        sq = delete(Comment).where(Comment.image_id == image.id)
+        await db.execute(sq)
+        # Delete suitable image
         await db.delete(image)
         await db.commit()
     return image
