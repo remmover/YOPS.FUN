@@ -123,7 +123,7 @@ class TagResponseSchema(BaseModel):
 
 
 class TagSchema(BaseModel):
-    name: str
+    name: str = Field(min_length=3, max_length=24)
 
     @field_validator("name")
     @classmethod

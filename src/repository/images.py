@@ -1,8 +1,11 @@
 from datetime import datetime, date, timedelta
+from fastapi import status
 from sqlalchemy import (
     select,
     delete,
+    insert,
     text,
+    func,
     and_,
     or_,
 )
@@ -10,9 +13,9 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from src.database.models import Image, Comment, Tag, User, Role
+from src.database.models import Image, Comment, tag_m2m_image, Tag, User, Role
 from src.schemas import ImageAboutUpdateSchema
-# from src.repository.admin import ( check_permission,)
+# from src.repository.admin import (check_permission,)
 
 
 async def image_create(
@@ -89,28 +92,93 @@ async def image_add_tag(
     """
     Add tag to image for a specific owner.
     """
-    return (409, "Not implemented yet.")
+    sq = select(Image).filter(and_(Image.id == image_id,
+                                   or_(user.role == Role.admin,
+                                       user.role == Role.moder,
+                                       Image.user_id == user.id)))
+    result = await db.execute(sq)
+    image = result.scalar_one_or_none()
 
-    # sq = select(Image).filter(and_(Image.id == image_id,
-    #                                or_(user.role == Role.admin,
-    #                                    user.role == Role.moder,
-    #                                    Image.user_id == user.id)))
-    # result = await db.execute(sq)
-    # image = result.scalar_one_or_none()
+    if image is None:
+        return (status.HTTP_404_NOT_FOUND, "Image is not accessible.")
 
-    # if image is None:
-    #     return (409, "Image is not accessible.")
+    sq = select(Tag).filter(func.lower(Tag.name) == func.lower(tag_name))
+    result = await db.execute(sq)
+    await db.commit()
+    tag = result.first()
 
-    # sq = select(Tag).filter(and_(Image.id == image_id,
-    #                                or_(user.role == Role.admin,
-    #                                    user.role == Role.moder,
-    #                                    Image.user_id == user.id)))
+    if tag is None:
+        return (status.HTTP_404_NOT_FOUND, "Tag is not exists.")
+
+    tag = tag[0]
+    # print(f"   [D] tag: {tag.id}, {tag.name}")
+    sq = select(tag_m2m_image).where(tag_m2m_image.c.image_id == image.id)
+    result = await db.execute(sq)
+    await db.commit()
+    tags = result.all()
+    # print(f"    [D] tags='{tags}'")
+    # output: [(5, 9, 7), (6, 9, 3), (7, 9, 4), (8, 9, 8)]
+
+    for tg in tags:
+        if tg[2] == tag.id:
+            return (status.HTTP_409_CONFLICT, "Already exists.")
+
+    if len(tags) >= 5:
+        return (status.HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE,
+                "More than 5 tags are not allowed.")
+
+    sq = insert(tag_m2m_image).values(image_id=image.id, tag_id=tag.id)
+    # print(f"    [D] sq='{sq}'")
+    await db.execute(sq)
+    await db.commit()
+    tag_ids = [tg[2] for tg in tags]
+    tag_ids.append(tag.id)
+    sq = select(Tag).filter(Tag.id.in_(tag_ids))
+    print(f"    [D2] sq='{sq}'")
+    result = await db.execute(sq)
+    await db.commit()
+    tags = result.all()
+    # print(f"    [D3] tags='{tags}'")
+    return (0, [tg[0].name for tg in tags])
 
 
-    # image.about = body.about
-    # image.updated_at = datetime.now()
-    # await db.commit()
-    # return image
+async def image_remove_tag(image_id: int, tag_name: str,
+                           user: User, db: AsyncSession
+):
+    """
+    Removes tag from image for a specific owner.
+    """
+    sq = select(Image).filter(and_(Image.id == image_id,
+                                   or_(user.role == Role.admin,
+                                       user.role == Role.moder,
+                                       Image.user_id == user.id)))
+    result = await db.execute(sq)
+    image = result.scalar_one_or_none()
+
+    if image is None:
+        return (status.HTTP_404_NOT_FOUND, "Image is not accessible.")
+
+    sq = select(Tag).filter(func.lower(Tag.name) == func.lower(tag_name))
+    result = await db.execute(sq)
+    await db.commit()
+    tag = result.first()
+    if tag is None:
+        return (status.HTTP_404_NOT_FOUND, "Tag is not exists.")
+    tag = tag[0]
+    # print(f"   [D] tag='{tag}'")
+
+    sq = delete(tag_m2m_image).where(and_(tag_m2m_image.c.image_id == image.id,
+                                          tag_m2m_image.c.tag_id == tag.id)) \
+                              .returning(tag_m2m_image.c.id)
+    # print(f"   [D] sq='{sq}'")
+    result = await db.execute(sq)
+    await db.commit()
+
+    affected_list = result.all()
+    if len(affected_list) == 0: # 0 rows are deleted
+        return (status.HTTP_418_IM_A_TEAPOT, "Tag is absent for this image.")
+
+    return (0, "Tag successfully removed.")
 
 
 async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | None:

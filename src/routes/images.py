@@ -137,6 +137,26 @@ async def image_add_tag(
     raise HTTPException(status_code=code, detail=res)
 
 
+@router.delete("/tag/{image_id}/{tag_name}")
+async def image_remove_tag(
+    image_id: int,
+    tag_name: str,
+    current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Remove tag from image of a specific owner.
+    """
+    (code, res) = await repository_images.image_remove_tag(image_id, tag_name,
+                                                           current_user, db)
+    if code == 0:
+        return {
+            "image_id": image_id,
+            "message": res
+        }
+    raise HTTPException(status_code=code, detail=res)
+
+
 @router.delete("/{image_id}", response_model=ReturnMessageResponseSchema)
 async def image_delete(
     image_id: int = Path(description="The ID of image to delete", ge=1),
