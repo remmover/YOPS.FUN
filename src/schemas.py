@@ -122,6 +122,10 @@ class TagResponseSchema(BaseModel):
     name: str
 
 
+class ReadTagResponseSchema(BaseModel):
+    tags: list
+
+
 class TagSchema(BaseModel):
     name: str = Field(min_length=3, max_length=24)
 
