@@ -2,7 +2,7 @@ import cloudinary
 import cloudinary.uploader
 
 
-from datetime import date, datetime
+from datetime import date
 from fastapi import (
     APIRouter,
     Depends,
@@ -65,8 +65,8 @@ async def image_create(
             This exception is raised when such image already exists.
     """
     cloud = cloudinary.uploader.upload(file.file, overwrite=True)
-    print(cloud)
-    print(f"[u] version={cloud.get('version')}, public_id={cloud.get('public_id')}")
+    # print(cloud)
+    # print(f"[u] version={cloud.get('version')}, public_id={cloud.get('public_id')}")
     cloud_public_id = cloud.get("public_id")
     cloud_version = cloud.get("version")
     image_url = cloudinary.CloudinaryImage(cloud_public_id).build_url(
@@ -115,6 +115,26 @@ async def image_about_update(
             "message": "Image description is successfully changed.",
         }
     raise HTTPException(status_code=400, detail="None suitable image is.")
+
+
+@router.put("/{image_id}/{tag_name}")
+async def image_add_tag(
+    image_id: int,
+    tag_name: str,
+    current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Assign tag to image for a current image owner.
+    """
+    (code, res) = await repository_images.image_add_tag(image_id, tag_name,
+                                                        current_user, db)
+    if code == 0:
+        return {
+            "image_id": image_id,
+            "tags": res,
+        }
+    raise HTTPException(status_code=code, detail=res)
 
 
 @router.delete("/{image_id}", response_model=ReturnMessageResponseSchema)
@@ -299,4 +319,8 @@ async def images_search(
     records = await repository_images.image_search(
                                 username, from_date, days, tags,
                                 db)
-    return [{'image_id': id, 'small_image_url': small_image, 'short_about': shortent(about)} for id, small_image, about in records]
+    return [
+        {
+        'image_id': id, 'small_image_url': small_image, 'short_about': shortent(about)
+        }
+        for id, small_image, about in records]

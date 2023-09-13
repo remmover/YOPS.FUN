@@ -1,10 +1,10 @@
 import enum
 from datetime import date
 
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, SmallInteger, String, Table, Text, func
 from sqlalchemy import Enum
-
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -90,6 +90,36 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
+# class Permission(Base):
+#     __tablename__ = "permissions"
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+#     role: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+#     can_add_image: Mapped[bool] = mapped_column(Boolean, nullable=False,
+#                                                 default=False)
+#     can_update_image: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_delete_image: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_add_tag: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+#     can_update_tag: Mapped[bool] = mapped_column(Boolean, nullable=False,
+#                                                  default=False)
+#     can_delete_tag: Mapped[bool] = mapped_column(Boolean, nullable=False,
+#                                                  default=False)
+#     can_add_comment: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_update_comment: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_delete_comment: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     users: Mapped[list[User]] = relationship(
+#         "User", back_populates="permission", lazy="noload"
+#     )
+
 class Comment(Base):
     __tablename__ = "comments"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -106,7 +136,7 @@ class Comment(Base):
         "updated_at", DateTime, default=func.now(), onupdate=func.now()
     )
     image_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("images.id"), nullable=True
+        Integer, ForeignKey("images.id"), nullable=False
     )
     image: Mapped["Image"] = relationship("Image", backref="comments", lazy="joined")
     """user_id always must be present because comment is created by specific user"""

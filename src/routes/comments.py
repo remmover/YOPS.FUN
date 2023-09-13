@@ -17,7 +17,7 @@ from starlette.background import BackgroundTasks
 
 from src.conf.config import config
 from src.services.auth import auth_service
-from src.repository import comment as repository_comment
+from src.repository import comments as repository_comments
 
 router = APIRouter(prefix="/comments", tags=["comments"])
 
@@ -70,7 +70,7 @@ async def emometer(comment: str, comment_id: int, db: AsyncSession):
     m = emo_fear.search(answ)
     if m:
         fear = int(m.group(1))
-    await repository_comment.update_emometer(
+    await repository_comments.update_emometer(
         joy, anger, sadness, surprise, disgust, fear,
         comment_id, db
     )
@@ -91,7 +91,7 @@ async def create_comment_for_image(
             detail="Image not found or doesn't belong to the current user",
         )
 
-    new_comment: Comment = await repository_comment.create_comment(
+    new_comment: Comment = await repository_comments.create_comment(
         comment, current_user.id, image_id, db
     )
 
@@ -108,7 +108,7 @@ async def update_comment_for_image(
     current_user: User = Depends(auth_service.get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    updated_comment = await repository_comment.update_comment(body, current_user, db)
+    updated_comment = await repository_comments.update_comment(body, current_user, db)
 
     if updated_comment:
         background_tasks.add_task(emometer,
@@ -129,7 +129,7 @@ async def update_comment_for_image(
 
 @router.get("/images/{image_id}/comments/", response_model=CommentShowAllSchema)
 async def get_comments_for_image(image_id: int, db: AsyncSession = Depends(get_db)):
-    comments = await repository_comment.get_comments_for_image(image_id, db)
+    comments = await repository_comments.get_comments_for_image(image_id, db)
     if comments:
         return {"comments": comments}
 
@@ -142,10 +142,10 @@ async def get_comments_for_image(image_id: int, db: AsyncSession = Depends(get_d
 @router.delete("/{comment_id}", response_model=ReturnMessageResponseSchema)
 async def delete_comment_for_image(
     comment_id: int = Path(description="The ID of comment to delete", ge=1),
-    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    deleted_comment = await repository_comment.delete_comment(
+    deleted_comment = await repository_comments.delete_comment(
         comment_id, current_user, db
     )
 

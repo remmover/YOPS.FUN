@@ -13,7 +13,7 @@ from src.database.connect import get_db
 from src.repository import users as repository_users
 from src.conf.config import config
 from src.conf import messages
-from src.database.models import Role
+# from src.database.models import Role
 
 
 class Auth:
@@ -46,7 +46,8 @@ class Auth:
 
         Args:
             data (dict): Data to be encoded in the token.
-            expires_delta (Optional[float], optional): Expiry time in seconds. Defaults to None.
+            expires_delta (Optional[float], optional): Expiry time
+            in seconds. Defaults to None.
 
         Returns:
             str: Encoded access token.
@@ -72,7 +73,8 @@ class Auth:
 
         Args:
             data (dict): Data to be encoded in the token.
-            expires_delta (Optional[float], optional): Expiry time in seconds. Defaults to None.
+            expires_delta (Optional[float], optional): Expiry time in
+            seconds. Defaults to None.
 
         Returns:
             str: Encoded refresh token.
@@ -163,7 +165,8 @@ class Auth:
 
         Args:
             token (str, optional): Access token. Defaults to Depends(oauth2_scheme).
-            db (AsyncSession, optional): Async database session. Defaults to Depends(get_db).
+            db (AsyncSession, optional): Async database session. Defaults
+            to Depends(get_db).
 
         Returns:
             User: The authenticated user.
@@ -182,10 +185,11 @@ class Auth:
                     raise credentials_exception
             else:
                 raise credentials_exception
-        except JWTError as e:
+        except JWTError:
             raise credentials_exception
 
-        user = self.cache.get(f"user:{email}")
+        # user = self.cache.get(f"user:{email}")
+        user = None #<-- cache is a reason why User.role is not changed quickly --!
         if user is None:
             user = await repository_users.get_user_by_email(email, db)
             if user is None:
