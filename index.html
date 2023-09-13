@@ -19,8 +19,8 @@
   <title>Your Opinion, Picture, Status for FUN</title>
 
   <script>
-    // const URL_PREF = "http://127.0.0.1:8000"
-    const URL_PREF = "https://todo.yops.fun"
+    const URL_PREF = "http://127.0.0.1:8000"
+    // const URL_PREF = "https://todo.yops.fun"
     var ACCESS_TOKEN = "";
     var TC_ITEM_SIZE = '100';
     var TC_ITEMS = [
@@ -83,27 +83,40 @@
       //   colorLight: "#dddddd",
       //   correctLevel: QRCode.CorrectLevel.M // QRCode.CorrectLevel.H
       // });
+      loapid_tags();
     });
 
-    function api_get_item(item_list, status, req) {
-      ;
+    function loapid_tags() {
+      let url = URL_PREF + "/api/tags/";
+      var retinfo = $.ajax({
+        url: url,
+        type: "GET",
+        dataType: "json",
+        data: {},
+        success: function (data, status, req) {
+          let opts = ''
+          let tags = data.tags;
+          tags = tags.sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+          });
+          let tc = tags.length
+          console.log("tag count: "+tc+', '+tags)
+          for (i = 0; i < tc; ++i) {
+            opts += '<option value="'+tags[i]+'">'+tags[i]+'</option>';
+          }
+          $('#yops-tags').html(opts)
+        },
+        error: function (request, status, error) {
+            ;
+        }
+      })
     }
-
+    function api_get_item(item_list, status, req) {}
     function onClickItem(url) {
-      QR_OBJ.clear();
-      QR_OBJ.makeCode(JSON.stringify(url));
-      alert("Test message: Here must be loaded item identified by " + JSON.stringify(url));
-      /*          $.ajax({
-                    url: "/send_message",
-                    type: "POST",
-                    dataType: "html",
-                    data: {
-                        'session_id': str(session_id),
-                        'username': username,
-                        'addressee': addressee,
-                        'message': message },
-                    success: api_get_item })
-      */
+      // QR_OBJ.clear();
+      // QR_OBJ.makeCode(JSON.stringify(url));
+      // alert("Test message: Here must be loaded item identified by " + JSON.stringify(url));
+      alert("Under Constuction!")
     }
     function syntaxHighlight(json) {
       if (typeof json != 'string') {
@@ -368,7 +381,7 @@
 
                 <div class="col-xl-6 col-sm-12">
                   <label for="search-tags" class="form-label">Tags</label>
-                  <select class="form-select" size="5" multiple id="search-tags" aria-label="Multiple select example">
+                  <select class="form-select" size="5" id="yops-tags" multiple id="search-tags" aria-label="Multiple select example">
                     <option value="world" selected>world</option>
                     <option value="life">life</option>
                     <option value="awesome">awesome</option>
@@ -421,9 +434,9 @@
   <!-- Log Window to show requests and answers -->
   <div class="modal" tabindex="-1" id="log-window">
     <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
+      <div class="modal-content text-black yops-transparent2-container">
         <div class="modal-header">
-          <h5 class="modal-title">Interchange Log</h5>
+          <h5 class="modal-title"><b>Interchange Log</b></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="log-window-content"></div>

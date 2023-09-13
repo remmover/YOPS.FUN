@@ -39,7 +39,14 @@ body {
   padding: 20px;
   color: var(--bs-white);
   border-radius: 20px;
-  background: rgba(0,0,0,0.5);
+  background: rgba(32,32,32,0.5);
+}
+.yops-transparent2-container {
+  margin-bottom: 20px;
+  padding: 20px;
+  color: var(--bs-white);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.8);
 }
 .yops-search-period {
   width: 100%;
