@@ -13,12 +13,12 @@ from src.database.connect import get_db
 from src.database.models import User, Role
 from src.repository import tags as repository_tags
 from src.services.auth import auth_service
-from src.schemas import TagSchema, TagResponseSchema
+from src.schemas import TagSchema, TagResponseSchema, ReadTagResponseSchema
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 
 
-@router.get("/", response_model=List[TagResponseSchema])
+@router.get("/", response_model=ReadTagResponseSchema)
 async def tags_read(db: AsyncSession = Depends(get_db),
 ):
     """
@@ -27,8 +27,8 @@ async def tags_read(db: AsyncSession = Depends(get_db),
     response_list = []
     tags = await repository_tags.tags_read(db)
     for tags in tags:
-        response_list.append({'name': tags[0].name})
-    return response_list
+        response_list.append(tags[0].name)
+    return { "tags": response_list }
 
 
 @router.post("/", response_model=TagResponseSchema)

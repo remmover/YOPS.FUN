@@ -9,7 +9,12 @@ import redis.asyncio as redis
 from src.conf.config import config
 from src.routes import auth, users, images, tags, comments
 
-app = FastAPI()
+app = FastAPI(title="YOPS.FUN App",
+    description = "<h2>Your Opinions, Pictures, Status for FUN</h2><br>" \
+                  "https://YOPS.FUN",
+    summary='Time Trillers',
+    version="5.0.5",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
