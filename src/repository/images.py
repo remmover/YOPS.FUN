@@ -10,7 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from src.database.models import Image, Comment, User, Role
+from src.database.models import Image, Comment, Tag, User, Role
 from src.schemas import ImageAboutUpdateSchema
 # from src.repository.admin import ( check_permission,)
 
@@ -83,6 +83,36 @@ async def image_about_update(
     return image
 
 
+async def image_add_tag(
+    image_id: int, tag_name: str, user: User, db: AsyncSession
+):
+    """
+    Add tag to image for a specific owner.
+    """
+    return (409, "Not implemented yet.")
+
+    # sq = select(Image).filter(and_(Image.id == image_id,
+    #                                or_(user.role == Role.admin,
+    #                                    user.role == Role.moder,
+    #                                    Image.user_id == user.id)))
+    # result = await db.execute(sq)
+    # image = result.scalar_one_or_none()
+
+    # if image is None:
+    #     return (409, "Image is not accessible.")
+
+    # sq = select(Tag).filter(and_(Image.id == image_id,
+    #                                or_(user.role == Role.admin,
+    #                                    user.role == Role.moder,
+    #                                    Image.user_id == user.id)))
+
+
+    # image.about = body.about
+    # image.updated_at = datetime.now()
+    # await db.commit()
+    # return image
+
+
 async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | None:
     """
     Delete a single image with the specified ID for a specific user.
@@ -96,7 +126,6 @@ async def image_delete(image_id: int, user: User, db: AsyncSession) -> Image | N
     :return: The deleted contact, or None if it does not exist.
     :rtype: Image | None
     """
-
     sq = select(Image).filter(and_(Image.id == image_id,
                                    or_(user.role == Role.admin,
                                        user.role == Role.moder,

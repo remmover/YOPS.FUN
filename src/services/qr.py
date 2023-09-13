@@ -46,11 +46,9 @@ async def create_qr_code_and_upload(image_id, current_user, db):
 
 async def delete_temp_qr_code(public_id):
     try:
-
         cloudinary.uploader.destroy(public_id)
     except Exception as e:
-        print(f"Помилка під час видалення зображення: {e}")
-
+        print(f"Error while image deletion in Cloudinary: {e}")
 
 
 scheduler.start()

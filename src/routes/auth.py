@@ -191,7 +191,7 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/admin_page")
-async def login(
+async def login_admin(
     body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
     user = await repository_users.get_user_by_email(body.username, db)
@@ -209,7 +209,7 @@ async def login(
 
 
 @router.post("/moder_page")
-async def login(
+async def login_moder(
     body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
     user = await repository_users.get_user_by_email(body.username, db)

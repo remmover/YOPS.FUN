@@ -90,6 +90,36 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
+# class Permission(Base):
+#     __tablename__ = "permissions"
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+#     role: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+#     can_add_image: Mapped[bool] = mapped_column(Boolean, nullable=False,
+#                                                 default=False)
+#     can_update_image: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_delete_image: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_add_tag: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+#     can_update_tag: Mapped[bool] = mapped_column(Boolean, nullable=False,
+#                                                  default=False)
+#     can_delete_tag: Mapped[bool] = mapped_column(Boolean, nullable=False,
+#                                                  default=False)
+#     can_add_comment: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_update_comment: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     can_delete_comment: Mapped[bool] = mapped_column(
+#         Boolean, nullable=False, default=False
+#     )
+#     users: Mapped[list[User]] = relationship(
+#         "User", back_populates="permission", lazy="noload"
+#     )
+
 class Comment(Base):
     __tablename__ = "comments"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
