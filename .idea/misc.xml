@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="enabledOnReformat" value="true" />
     <option name="pathToExecutable" value="C:\Users\Gyrocopter_UA\AppData\Local\Programs\Python\Python311\Scripts\black.exe" />
-    <option name="sdkUUID" value="676ab257-a677-424b-ad88-3308b385dfd0" />
+    <option name="sdkUUID" value="9e5d85cb-59a8-4f3a-97cf-7d4a8849c571" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (LifeLens)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (YOPS.FUN)" project-jdk-type="Python SDK" />
 </project>

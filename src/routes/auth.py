@@ -20,6 +20,8 @@ from src.repository import users as repository_users
 from src.services.auth import auth_service
 from src.services.email import send_email
 from src.conf import messages
+from src.database.models import Role
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
@@ -46,6 +48,7 @@ async def signup(
     Returns:
         UserResponseSchema: The registered user's details.
     """
+    print(f"[d] request={request}")
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(
@@ -75,11 +78,18 @@ async def login(
     """
     user = await repository_users.get_user_by_email(body.username, db)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL
+        )
     if not user.confirmed:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.EMAIL_NOT_CONFIRMED)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=messages.EMAIL_NOT_CONFIRMED,
+        )
     if not auth_service.verify_password(body.password, user.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.BAD_PASSWORD)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.BAD_PASSWORD
+        )
     # Generate JWT
     access_token = await auth_service.create_access_token(data={"sub": user.email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
@@ -100,7 +110,8 @@ async def refresh_token(
     Refresh the access token using a refresh token.
 
     Args:
-        credentials (HTTPAuthorizationCredentials): The refresh token from the authorization header.
+        credentials (HTTPAuthorizationCredentials): The refresh token from
+        the authorization header.
         db (AsyncSession): The async database session.
 
     Returns:
@@ -177,3 +188,40 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
         return {"message": messages.EMAIL_ALREADY_CONFIRMED}
     await repository_users.confirmed_email(email, db)
     return {"message": messages.EMAIL_CONFIRMED}
+
+
+@router.post("/admin_page")
+async def login_admin(
+    body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    user = await repository_users.get_user_by_email(body.username, db)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL
+        )
+    if not auth_service.verify_password(body.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=messages.BAD_PASSWORD
+        )
+
+    if user.role == Role.admin:
+        return {"message": messages.ADMIN_IN}
+
+
+@router.post("/moder_page")
+async def login_moder(
+    body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    user = await repository_users.get_user_by_email(body.username, db)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL
+        )
+    if not auth_service.verify_password(body.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=messages.BAD_PASSWORD
+        )
+    if user.role != Role.user:
+        return {"message": messages.MODER_IN}
+    else:
+        return {"message": messages.NO_ACCES}

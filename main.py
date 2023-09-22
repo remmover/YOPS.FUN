@@ -1,13 +1,20 @@
+#!/usr/bin/env python
+
 import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from fastapi_limiter import FastAPILimiter
 import redis.asyncio as redis
 
-from src.routes import auth, users
 from src.conf.config import config
+from src.routes import auth, users, images, tags, comments
 
-app = FastAPI()
+app = FastAPI(title="YOPS.FUN App",
+    description = "<h2>Your Opinions, Pictures, Status for FUN</h2><br>" \
+                  "https://YOPS.FUN",
+    summary='Time Trillers',
+    version="5.0.5",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,8 +22,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(auth.router)
 app.include_router(users.router, prefix="/api")
+app.include_router(images.router, prefix="/api")
+app.include_router(tags.router, prefix="/api")
+app.include_router(comments.router, prefix="/api")
 
 
 @app.on_event("startup")
@@ -34,6 +45,7 @@ async def startup():
     r = await redis.Redis(
         host=config.redis_host,
         port=config.redis_port,
+        password=config.redis_password,
         db=0,
         encoding="utf-8",
         decode_responses=True,
@@ -49,7 +61,7 @@ def read_root():
     Returns:
         dict: A dictionary containing a greeting message.
     """
-    return {"message": "Hello World"}
+    return {"message": "Your Own Pictures and Status API."}
 
 
 if __name__ == "__main__":

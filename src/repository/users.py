@@ -1,24 +1,29 @@
 import logging
 
-from fastapi import HTTPException, status
 from libgravatar import Gravatar
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.conf import messages
+
 from src.database.models import User
 from src.schemas import UserSchema
 
 
 async def get_user_by_email(email: str, db: AsyncSession) -> User:
     """
-    Retrieve a user by their email address.
+    Retrieves an user with the unique specific email address.
+    Email is searched in case insensitive way. For example, emails
+    hero@example.com, Hero@example.com, HERO@EXAMPLE.COM, etc,
+    are the same.
 
-    :param email: Email address of the user to retrieve.
-    :param db: AsyncSession instance for database operations.
-    :return: The user object or None if not found.
+    :param email: The email address to retrieve user for.
+    :type email: str
+    :param db: The database session.
+    :type db: Session
+    :return: An user which is identified by email address.
+    :rtype: User
     """
-    sq = select(User).filter_by(email=email)
+    sq = select(User).filter(func.lower(User.email) == func.lower(email))
     result = await db.execute(sq)
     user = result.scalar_one_or_none()
     return user
@@ -40,6 +45,13 @@ async def create_user(body: UserSchema, db: AsyncSession) -> User:
         logging.error(e)
     new_user = User(**body.model_dump(), avatar=avatar)
     db.add(new_user)
+
+    num_users = await db.execute(select(func.count(User.id)))
+    num_users = num_users.scalar()
+
+    if num_users == 0:
+        new_user.role = "admin"
+
     await db.commit()
     await db.refresh(new_user)
     return new_user

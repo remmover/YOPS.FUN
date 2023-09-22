@@ -1,0 +1,22 @@
+[u] cloud={
+    'asset_id': '7db59683958770f90df9fd7945057e68',
+    'public_id': 'pvo9m5tuu3o0r6vdfjli',
+    'version': 1694002666,
+    'version_id': '7b6dfc3da7e0e11019a817cff7084a47',
+    'signature': '90de158e5da9b55de8f0fbeaa961b54f8367df62',
+    'width': 867,
+    'height': 1300,
+    'format': 'jpg',
+    'resource_type': 'image',
+    'created_at': '2023-09-06T12:17:46Z',
+    'tags': [],
+    'bytes': 223971,
+    'type': 'upload',
+    'etag': '2578c6a6847fc0240e2edd82655be5c0',
+    'placeholder': False,
+    'url': 'http://res.cloudinary.com/dyof3s17c/image/upload/v1694002666/pvo9m5tuu3o0r6vdfjli.jpg',
+    'secure_url': 'https://res.cloudinary.com/dyof3s17c/image/upload/v1694002666/pvo9m5tuu3o0r6vdfjli.jpg',
+    'folder': '',
+    'original_filename': 'stream',
+    'api_key': '427136772193941'
+}
