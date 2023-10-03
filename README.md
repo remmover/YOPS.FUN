@@ -10,12 +10,11 @@
 - [Emotion Analysis](#emotion-analysis)
 - [Installation](#installation)
 - [Usage](#usage)
-- [API Documentation](#api-documentation)
 - [License](#license)
 
 ## Introduction
 
-Welcome to the Photo Sharing App! This application allows users to share and interact with photos in various ways. It's built using FastAPI and utilizes JWT tokens for authentication. Users can have three different roles: regular user, moderator, and administrator. The first user in the system is always an administrator.
+Welcome to the YOPS.FUN App! This application allows users to share and interact with photos in various ways. It's built using FastAPI and utilizes JWT tokens for authentication. Users can have three different roles: regular user, moderator, and administrator. The first user in the system is always an administrator.
 
 ## Authentication
 
